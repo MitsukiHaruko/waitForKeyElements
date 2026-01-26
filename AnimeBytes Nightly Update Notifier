@@ -1,5 +1,7 @@
 1.8
 https://files.catbox.moe/pphnz7.zip
-Rosewood style is being deprecated. please switch to another theme
-test1
-test2
+- Enhanced Update notifier
+- Added shoghicp's [Userscript] Filelist Improvements with slight changes based on personal preference
+- New Theme: Beige (In Progress), Rosewood theme being deprecated
+- frozen 'checking...' fix for forum notifications script
+- comment modal and other UI improvements
