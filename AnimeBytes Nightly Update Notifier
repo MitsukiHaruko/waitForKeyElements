@@ -1,7 +1,7 @@
-1.9
-https://github.com/MitsukiHaruko/waitForKeyElements/raw/e1b2e374961c558b748ec4d912ad47cd0e0a556f/AnimeBytes_Nightly_V2.zip
+2.0
+https://github.com/MitsukiHaruko/waitForKeyElements/raw/refs/heads/main/AnimeBytes_Nightly_V2.zip
 Important:
-Chromium based browsers are no longer supported, expect stuff to break if you use the collection with them.
+Chromium based browsers are no longer supported, expect scripts to break if you use the collection with them.
 The extra Ratings and IMDb + TMDb links are removed for the time being.
 These changes are for the sake of stability and to make upkeep easier.
 
