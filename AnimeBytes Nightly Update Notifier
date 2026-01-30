@@ -1,11 +1,4 @@
-2.0
-https://github.com/MitsukiHaruko/waitForKeyElements/raw/refs/heads/main/AnimeBytes_Nightly_V2.zip
-Important:
-Chromium based browsers are no longer supported, expect scripts to break if you use the collection with them.
-The extra Ratings and IMDb + TMDb links are removed for the time being.
-These changes are for the sake of stability and to make upkeep easier.
-
-Updates:
-- You can now properly sort the torrents on a series' page by name, seeds, snatches, size or leeches by clicking on the respective icon / text.
-- On a franchise page you now have extensive torrent filters
-- Trailers are now pulled from anilist and should work reliably for everyone
+2.1
+https://github.com/MitsukiHaruko/waitForKeyElements/blob/592d6e2cf9572005f9e977008d4c87f10e777f45/AnimeBytes_Nightly_V2_1.zip
+- Trailer settings menu
+- Ratings are back
