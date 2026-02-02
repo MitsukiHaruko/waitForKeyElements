@@ -1,5 +1,3 @@
-2.1
-https://github.com/MitsukiHaruko/waitForKeyElements/raw/592d6e2cf9572005f9e977008d4c87f10e777f45/AnimeBytes_Nightly_V2_1.zip
-- Trailer settings menu
-- Ratings are back
-- Violentmonkey should now be supported on firefox based browsers
+2.2
+https://github.com/MitsukiHaruko/waitForKeyElements/raw/refs/heads/main/AnimeBytes_Night;y_2_2.zip
+- personal next-episodes homepage widget! Add airing shows that you are watching to your calender by hitting the [+] button on the shows page.
