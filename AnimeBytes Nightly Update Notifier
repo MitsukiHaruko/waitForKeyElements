@@ -1,6 +1,8 @@
-2.3
-https://github.com/MitsukiHaruko/waitForKeyElements/raw/refs/heads/main/AnimeBytes_Nightly_2_3.zip
-This version adds the last bit of polish before the project moves into maintenance mode with future updates becoming infrequent. Thank you to everyone who provided feedback along the way.
-If ever there is a script you think ought to be included in the collection, do leave a comment in the Nightly thread.
-Cheers, 
-Mitsuki
+2.4
+https://github.com/MitsukiHaruko/waitForKeyElements/raw/refs/heads/main/AnimeBytes_Nightly_2_4.zip
+- Reduceed pop in on show pages
+- Requiered Seeding time now hard capped at 21 days as per the rules
+
+IMPORTANT:
+For this Update, a reinstall of the themes as well as a clean install of the scripts (removing old scripts prior to reinstalling) is requiered.
+As a result, disregard the update instructions below
