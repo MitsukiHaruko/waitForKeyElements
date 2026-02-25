@@ -1,8 +1,9 @@
 2.4
-https://github.com/MitsukiHaruko/waitForKeyElements/raw/refs/heads/main/AnimeBytes_Nightly_2_4.zip
-- Reduceed pop in on show pages
-- Requiered Seeding time now hard capped at 21 days as per the rules
+https://github.com/MitsukiHaruko/waitForKeyElements/raw/refs/heads/main/AnimeBytes_Nightly_2_5.zip
+You can now easily create your own site themes and even get yen rewards for doing so!
+There is a theme template and instructions available in the Nightly thread, feel free to take a look if you are interested (⌒▽⌒)
 
-IMPORTANT:
+Other changes for this update are mostly minor and QOL related
+
+IMPORTANT
 For this Update, a reinstall of the themes as well as a clean install of the scripts (removing old scripts prior to reinstalling) is requiered.
-As a result, disregard the update instructions below
