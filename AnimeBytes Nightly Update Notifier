@@ -1,9 +1,8 @@
-2.5
-https://github.com/MitsukiHaruko/waitForKeyElements/raw/refs/heads/main/AnimeBytes_Nightly_2_5.zip
-You can now easily create your own site themes and even get yen rewards for doing so!
-There is a theme template and instructions available in the Nightly thread, feel free to take a look if you are interested (⌒▽⌒)
+2.6
+https://github.com/MitsukiHaruko/waitForKeyElements/raw/refs/heads/main/AnimeBytes_Nightly_2_6.zip
+- Revisited the colored torrent tags
+- Fixed unplayable youtube embeds in the forums (and across other sites like Aither with their trailers)
+- Settings option to move ratings and synopsis to the top of the page, option to disable the seedtime requirement information
+- Removed the 'Check Seeding' feature
 
-Other changes for this update are mostly minor and QOL related
-
-IMPORTANT
-For this Update, a reinstall of the themes as well as a clean install of the scripts (removing old scripts prior to reinstalling) is requiered.
+To update, please follow the update instructions below
