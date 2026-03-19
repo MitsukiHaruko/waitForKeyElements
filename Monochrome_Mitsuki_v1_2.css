@@ -216,6 +216,12 @@
         padding: 15px;
     }
 
+    .torrent-icons {
+        background-color: #84848421;
+        padding: 0px 7px;
+        border-radius: 10px;
+}
+
     .chatbox-message__source {display: none !important}
 
     .meta-chip__icon,
