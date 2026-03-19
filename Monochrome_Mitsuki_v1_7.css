@@ -225,8 +225,9 @@
 
     .torrent-icons {
         background-color: #84848421;
-        padding: 0px 7px;
+        padding: 0px 7px !important;
         border-radius: 10px;
+        margin-left: 8px
 }
 
     .chatbox-message__source {display: none !important}
