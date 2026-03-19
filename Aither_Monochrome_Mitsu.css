@@ -740,7 +740,7 @@
         padding: 0;
     }
     .chatroom__messages {
-        padding: 0 0px 0px;
+        padding: 0 0px 0px !important;
     }
     /* Navigation tabs
 ============================================================================ */
