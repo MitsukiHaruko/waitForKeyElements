@@ -739,6 +739,9 @@
         display: inline-block;
         padding: 0;
     }
+    .chatroom__messages {
+        padding: 0 0px 0px;
+    }
     /* Navigation tabs
 ============================================================================ */
     /* Tab Container */
