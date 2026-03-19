@@ -216,6 +216,8 @@
         padding: 15px;
     }
 
+    .chatbox-message__source {display: none !important}
+
     .meta-chip__icon,
     .meta-chip__image {
         color: #070708;
