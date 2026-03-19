@@ -211,6 +211,9 @@
 
     /* Misc
 ============================================================================ */
+    * {
+        scrollbar-color: rgba(100, 100, 100, 0.6) transparent;
+    }
     .bbcode-rendered.bbcode-rendered pre{
     background-color: #fff0;
     }
