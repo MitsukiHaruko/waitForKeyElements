@@ -214,6 +214,15 @@
     * {
         scrollbar-color: rgba(100, 100, 100, 0.6) transparent;
     }
+
+    .panel__body {
+  font-size: 18px;
+}
+    
+    html {
+  zoom: 85%;
+}
+
     .bbcode-rendered.bbcode-rendered pre{
     background-color: #fff0;
     }
