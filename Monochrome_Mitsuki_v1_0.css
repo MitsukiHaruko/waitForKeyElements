@@ -219,8 +219,8 @@
   font-size: 18px;
 }
     
-    html {
-  zoom: 85%;
+    div.gz-similar-layout__column {
+  zoom: 90%;
 }
 
     .bbcode-rendered.bbcode-rendered pre{
