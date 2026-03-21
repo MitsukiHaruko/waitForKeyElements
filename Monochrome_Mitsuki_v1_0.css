@@ -1,3 +1,9 @@
+@-moz-document url-prefix("https://aither.cc/torrents/*"), url-prefix("https://aither.cc/torrents*") {
+    
+    .page__torrent-similar--index { visibility: hidden; }
+    
+}
+
 :root {
         --color-grey-bg-1: #464646;
         /* Ratiobar */
@@ -180,8 +186,6 @@
         --torrent-tag-hover-fg: #fff;
         --torrent-tag-hover-bg: hsla(0, 0%, 100%, .1);
     }
-
-    html, body { visibility: hidden; }
 
     body {
         background-color: var(--color-grey-bg-4);
