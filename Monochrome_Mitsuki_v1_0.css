@@ -180,12 +180,8 @@
         --torrent-tag-hover-fg: #fff;
         --torrent-tag-hover-bg: hsla(0, 0%, 100%, .1);
     }
-
-@-moz-document url-prefix("https://aither.cc/torrents/*"), url-prefix("https://aither.cc/torrents*") {
     
     .page__torrent-similar--index { visibility: hidden; }
-    
-}
 
     body {
         background-color: var(--color-grey-bg-4);
