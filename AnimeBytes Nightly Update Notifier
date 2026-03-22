@@ -1,8 +1,10 @@
-2.6
-https://github.com/MitsukiHaruko/waitForKeyElements/raw/refs/heads/main/AnimeBytes_Nightly_2_6.zip
-- Revisited the colored torrent tags
-- Fixed unplayable youtube embeds in the forums (and across other sites like Aither with their trailers)
-- Settings option to move ratings and synopsis to the top of the page, option to disable the seedtime requirement information
-- Removed the 'Check Seeding' feature
+2.7
+https://github.com/MitsukiHaruko/waitForKeyElements/raw/refs/heads/main/AnimeBytes_Nightly_2_7.zip
+- External Links (AniDB, MAL, etc) on show pages are now displayed as clickable icons instead of simple text
+- Disabled IMDB ratings since scraping them is unreliable. IMDB links remain, created via TMDB external IDs
+- The Themes got a restyle to feel more like gazelle. There is also a new Theme option - 'letterboxd'
 
-To update, please follow the update instructions below
+BREAKING NEWS
+Nightly is coming to Aither - visit the AB Nightly thread to learn more!
+
+To update, please follow the instructions below
