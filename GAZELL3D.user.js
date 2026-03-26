@@ -5,6 +5,8 @@
 // @description  Reimagine UNIT3D-based torrent pages for readability with a two-column layout, richer metadata presentation, cleaner torrent naming, and minor quality-of-life tweaks.
 // @match        https://aither.cc/torrents/*
 // @match        https://aither.cc/torrents*
+// @updateURL    https://mitsukiharuko.github.io/waitForKeyElements/GAZELL3D.user.js
+// @downloadURL  https://mitsukiharuko.github.io/waitForKeyElements/GAZELL3D.user.js
 // @grant        GM_addStyle
 // @grant        GM_xmlhttpRequest
 // @grant        GM_setValue
