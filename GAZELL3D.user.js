@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         GAZELL3D
 // @namespace    https://github.com/anonymoize/GAZELL3D/
-// @version      1.9.8.1
+// @version      1.9.8.2
 // @description  Reimagine UNIT3D-based torrent pages for readability with a two-column layout, richer metadata presentation, cleaner torrent naming, and minor quality-of-life tweaks.
 // @match        https://aither.cc/torrents/*
 // @match        https://aither.cc/torrents*
@@ -938,10 +938,6 @@ const STORAGE_KEY = 'gz_collapsed_groups_v1';
       background: none;
       padding: 0;
       font: inherit;
-    }
-
-    .gz-actions-cell a:hover, .gz-actions-cell button:hover {
-      text-decoration: underline;
     }
 
     .gz-torrent-table {
@@ -5100,78 +5096,69 @@ const STORAGE_KEY = 'gz_collapsed_groups_v1';
         tdName.appendChild(iconSpan);
         newRow.appendChild(tdName);
 
-        // 4. Actions Column [ ED | BM | DL ] - Only if Enabled
-        if (CONFIG.enableGazelleButtons) {
-          const tdActions = create('td', 'gz-actions-cell');
-          const actions = [];
+        // 4. Actions Column
+if (CONFIG.enableGazelleButtons) {
+  const tdActions = create('td', 'gz-actions-cell');
+  const actions = [];
 
-          // Edit
-          if (CONFIG.showEditButton) {
-            const editLink = row.querySelector('.torrent-search--grouped__edit a');
-            if (editLink) {
-              const el = create('a');
-              el.href = editLink.href;
-              el.textContent = 'ED';
-              el.title = 'Edit';
-              actions.push(el);
-            }
-          }
+  // Download
+  const dlLink = row.querySelector('.torrent-search--grouped__download a');
+  if (dlLink) {
+    const dl = create('a');
+    dl.href = dlLink.href;
+    dl.textContent = 'DL';
+    dl.title = 'Download';
+    dl.style.color = '#cccccc';
+    actions.push(dl);
+  }
 
-          // Bookmark or Torrent Page link (depending on dropdown mode)
-          if (CONFIG.enableTorrentDropdowns && torrentUrl) {
-            // When dropdowns are enabled, show TP (Torrent Page) link instead of bookmark
-            const tp = create('a');
-            tp.href = torrentUrl;
-            tp.textContent = 'TP';
-            tp.title = 'Torrent Page';
-            tp.target = '_blank';
-            tp.rel = 'noopener';
-            actions.push(tp);
-          } else {
-            // Normal bookmark button
-            const bookmarkBtn = row.querySelector('.torrent-search--grouped__bookmark button');
-            if (bookmarkBtn) {
-              const bmClone = bookmarkBtn.cloneNode(true);
-              bmClone.textContent = 'BM';
-              bmClone.title = 'Bookmark';
-              bmClone.classList.remove('form__button');
-              bmClone.style.background = 'none';
-              bmClone.style.border = 'none';
-              bmClone.style.cursor = 'pointer';
-              bmClone.style.padding = '0';
-              bmClone.style.color = 'inherit';
-              actions.push(bmClone);
-            }
-          }
+  // Bookmark / Torrent Page
+  if (CONFIG.enableTorrentDropdowns && torrentUrl) {
+    const tp = create('a');
+    tp.href = torrentUrl;
+    tp.textContent = 'TP';
+    tp.title = 'Torrent Page';
+    tp.target = '_blank';
+    tp.rel = 'noopener';
+    actions.push(tp);
+  } else {
+    const bookmarkBtn = row.querySelector('.torrent-search--grouped__bookmark button');
+    if (bookmarkBtn) {
+      const bmClone = bookmarkBtn.cloneNode(true);
+      bmClone.textContent = 'BM';
+      bmClone.title = 'Bookmark';
+      actions.push(bmClone);
+    }
+  }
 
-          // Download
-          const dlLink = row.querySelector('.torrent-search--grouped__download a');
-          if (dlLink) {
-            const dl = create('a');
-            dl.href = dlLink.href;
-            dl.textContent = 'DL';
-            dl.title = 'Download';
-            actions.push(dl);
-          }
+  // Edit (last)
+  if (CONFIG.showEditButton) {
+    const editLink = row.querySelector('.torrent-search--grouped__edit a');
+    if (editLink) {
+      const el = create('a');
+      el.href = editLink.href;
+      el.textContent = 'ED';
+      el.title = 'Edit';
+      actions.push(el);
+    }
+  }
 
-          // Trump Report Button
-          if (torrentId) {
-            const tr = create('button');
-            tr.textContent = 'TR';
-            tr.title = 'Trump Report';
-            tr.style.background = 'none';
-            tr.style.border = 'none';
-            tr.style.cursor = 'pointer';
-            tr.style.padding = '0';
-            tr.style.color = 'inherit';
-            tr.style.font = 'inherit';
-            tr.addEventListener('click', (e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              showTrumpReportModal(torrentId, torrentDisplayName, seasonGroup, isSeasonLayout);
-            });
-            actions.push(tr);
-          }
+  // Trump Report
+  if (torrentId) {
+    const tr = create('button');
+    tr.textContent = 'TR';
+    tr.title = 'Trump Report';
+    tr.style.background = 'none';
+    tr.style.border = 'none';
+    tr.style.cursor = 'pointer';
+    tr.style.color = 'inherit';
+    tr.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      showTrumpReportModal(torrentId, torrentDisplayName, seasonGroup, isSeasonLayout);
+    });
+    actions.push(tr);
+  }
 
           actions.forEach((act, idx) => {
             tdActions.appendChild(act);
