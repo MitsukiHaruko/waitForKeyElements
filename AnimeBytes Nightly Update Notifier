@@ -1,4 +1,3 @@
-2.9
+2.9_fix
 https://github.com/MitsukiHaruko/waitForKeyElements/raw/refs/heads/main/AnimeBytes_Nightly_2_9.zip
-Banners (from Anilist) on title pages
-Please tell me what you think
+Fixed CSP banner loading issues that affected some users
