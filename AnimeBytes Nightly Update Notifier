@@ -1,3 +1,6 @@
-3.0
+3.1
 https://github.com/MitsukiHaruko/waitForKeyElements/raw/refs/heads/main/AnimeBytes_Nightly_3_0.zip
-Fixed CSP banner loading issues that affected some users
+This update (other than the usual minor bug fixes) brings Upload form improvements with better autofill for Manga.
+There is a relatively new manga archival project (from the same author that wrote the script) which I want to bring to attention:
+https://animebytes.tv/forums.php?action=viewthread&threadid=31291
+Please go check it out!
