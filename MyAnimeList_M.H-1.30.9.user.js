@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        MyAnimeList_M.H
 // @namespace   Nightly
-// @version     1.30.9
+// @version     1.31.0
 // @description https://github.com/KanashiiDev
 // @match       https://myanimelist.net/*
 // @match       https://www.mal-badges.com/users/*malbadges*
@@ -2314,7 +2314,6 @@ async function blockUser(id) {
 
 // Anilist API Request
 async function AnilistAPI(fullQuery) {
-  var query = fullQuery;
   let url = "https://graphql.anilist.co",
     options = {
       method: "POST",
@@ -2323,20 +2322,23 @@ async function AnilistAPI(fullQuery) {
         Accept: "application/json",
       },
       body: JSON.stringify({
-        query: query,
+        query: fullQuery,
       }),
     };
-  await delay(333);
+  await delay(333); // rate limit protection
   try {
     const response = await fetch(url, options);
     const data = await response.json();
-    if (data.error) {
+    if (data.errors) {
+      console.warn("Anilist API Error:", data.errors);
       return null;
     }
-    if (data.data) {
+    if (data.data?.Media) {
       return data;
     }
+    return null;
   } catch (error) {
+    console.error("Anilist API Request Failed:", error);
     return null;
   }
 }
@@ -2346,9 +2348,39 @@ let AlAPIRequestPromise;
 
 async function aniAPIRequest() {
   if (!AlAPIRequestPromise) {
-    const AlQuery = `query {Media(idMal:${entryId}, type:${entryType}) {bannerImage tags {isMediaSpoiler name rank description category}
-    relations {edges {relationType node {status startDate {year} seasonYear type format title {romaji} coverImage {medium large} idMal}}}
-    nextAiringEpisode {timeUntilAiring episode}}}`;
+    const AlQuery = `query {
+      Media(idMal: ${entryId}, type: ${entryType}) {
+        siteUrl
+        bannerImage
+        tags {
+          isMediaSpoiler
+          name
+          rank
+          description
+          category
+        }
+        relations {
+          edges {
+            relationType
+            node {
+              status
+              startDate { year }
+              seasonYear
+              type
+              format
+              title { romaji }
+              coverImage { medium large }
+              idMal
+            }
+          }
+        }
+        nextAiringEpisode {
+          timeUntilAiring
+          episode
+        }
+      }
+    }`;
+
     AlAPIRequestPromise = AnilistAPI(AlQuery).then((data) => {
       AlAPIData = data;
       AlAPIRequestPromise = null;
@@ -2356,6 +2388,51 @@ async function aniAPIRequest() {
     });
   }
   return AlAPIRequestPromise;
+}
+
+// ==================== ADD ANILIST LINK AT THE TOP ====================
+
+async function addAnilistLink() {
+  const data = await aniAPIRequest();
+  if (!data?.data?.Media?.siteUrl) {
+    console.warn("Could not get Anilist URL");
+    return;
+  }
+
+  const anilistUrl = data.data.Media.siteUrl;
+
+  // Find the container
+  const linksContainer = document.querySelector('div.js-links[data-rel="resource"]');
+  if (!linksContainer) {
+    console.warn("External links container not found");
+    return;
+  }
+
+  // Create Anilist link with icon (placed at the very top)
+  const anilistLinkHTML = `
+    <a class="link ga-click"
+       href="${anilistUrl}"
+       target="_blank"
+       data-ga-click-type="external-links-anime-pc-anilist"
+       style="display: flex; align-items: center; gap: 6px;">
+      <img src="https://i.imgur.com/QrRjhsy.png"
+           alt="Anilist"
+           style="width: 20px; height: 20px; object-fit: contain;">
+      <span>Anilist</span>
+    </a>
+  `;
+
+  // Insert at the very beginning of the list
+  linksContainer.insertAdjacentHTML('afterbegin', anilistLinkHTML);
+
+  console.log("✅ Anilist link added at the top:", anilistUrl);
+}
+
+// Run when page is ready
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", addAnilistLink);
+} else {
+  addAnilistLink();
 }
 
 /*changesB Loading screen disabled (stub)*/
