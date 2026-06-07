@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         GAZELL3D
 // @namespace    https://github.com/anonymoize/GAZELL3D/
-// @version      1.9.8.2
+// @version      1.9.9
 // @description  Reimagine UNIT3D-based torrent pages for readability with a two-column layout, richer metadata presentation, cleaner torrent naming, and minor quality-of-life tweaks.
 // @match        https://aither.cc/torrents/*
 // @match        https://aither.cc/torrents*
@@ -75,7 +75,7 @@ const STORAGE_KEY = 'gz_collapsed_groups_v1';
       const ph = document.createElement('tr');
       ph.className = 'gz-group-placeholder';
       ph.style.cursor = 'pointer';
-      ph.innerHTML = `<td colspan="6" style="padding:6px 12px; border-bottom:1px solid #444; color:#ccc;">
+      ph.innerHTML = `<td colspan="6" style="padding:6px 12px; border-bottom:0px solid #444; color:#ccc; background-color: #111928 !important; ">
           <strong>${name}</strong> (${group.members.length + 1})
       </td>`;
 
