@@ -1,4 +1,4 @@
-/* ==========================================================
+   /* ==========================================================
    Aither — Greek Theme
    Gold accents. Dark panels. Clean.
    Author : AzureBelmont
@@ -183,6 +183,8 @@ border-bottom-right-radius: var(--at-radius) !important; overflow: hidden !impor
 .data-table tbody tr:hover td { background-color: rgba(245,166,35,0.025) !important; }
 .data-table td { border-bottom: 0.5px solid var(--at-border) !important; }
 td { background-color: var(--at-bg2) !important; }
+    
+.page__torrent-similar--index { visibility: hidden;}
 
 table.similar-torrents__torrents tbody tr td { background-color: #181f35 !important; }
 
