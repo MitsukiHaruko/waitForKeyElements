@@ -6,6 +6,8 @@
 // @match        *://aither.cc/requests/*
 // @match        *://aither.cc/torrents/similar/*
 // @match        *://letterboxd.com/film/*
+// @updateURL    https://mitsukiharuko.github.io/waitForKeyElements/Aither_Companion.user.js
+// @downloadURL  https://mitsukiharuko.github.io/waitForKeyElements/Aither_Companion.user.js
 // @namespace    https://github.com/frenchcutgreenbean/UNIT3D-IS-COOL/
 // @author       mitsuki
 // @icon         https://i.imgur.com/caImJHQ.png
