@@ -168,7 +168,7 @@ html body .panel__actions .form__button--text { padding-top: 0 !important; paddi
 html body .panel__tabs { background-color: var(--at-bg2) !important; border-bottom: 1px solid var(--at-goldfaint) !important; padding: 0 4px !important; }
 html body .panel__tab { color: var(--at-text3) !important; border-bottom: 2px solid transparent !important; padding: 8px 12px !important; transition: color .15s !important; }
 html body .panel__tab:hover { color: var(--at-text2) !important; }
-html body .panel__tab--active { color: var(--at-gold) !important; border-bottom-color: var(--at-gold) !important; }
+html body .panel__tab--active, html body .panel__tab--active:hover { color: var(--at-gold) !important; border-bottom-color: var(--at-gold) !important; }
 html body .panel__header .panel__heading, html body .panel__header .panel__heading--centered { background-color: transparent !important; border: none !important; box-shadow: none !important; }
 
 article.chatbox-message { background-color: #0d111b !important; position: relative !important; transition: background-color 0.15s ease; border-radius: 0 !important; padding: 5px 8px 5px 0 !important; margin: 0 !important; gap: 0px 8px !important; grid-template-columns: 40px auto 1fr auto !important; align-items: start !important; border-bottom: 1px dashed #393939 !important; }
