@@ -191,7 +191,7 @@ h1.text-gold, h2.text-gold, h3.text-gold, h4.text-gold, .text-gold { color: var(
 .data-table-wrapper { border-radius: var(--at-radius) !important; overflow: hidden !important; border: 0.5px solid rgba(245,166,35,0.15) !important; }
 .data-table thead th, .data-table thead td, .torrent-search--list__no-poster-headers th, .torrent-search--list__no-poster-headers td { background-color: var(--at-bg3) !important; color: var(--at-text2) !important; font-size: 11px !important; font-weight: 600 !important; letter-spacing: .08em !important; text-transform: uppercase !important; border-bottom: 1px solid var(--at-goldfaint) !important; }
 
-.data-table tbody tr:hover td { background-color: #262e42 !important; }
+.data-table tbody tr:hover td { background-color: #101524 !important; }
 .data-table td { border-bottom: 0.5px solid var(--at-border) !important; }
 td { background-color: var(--at-bg2) !important; }
 tr:nth-child(even) td { background-color: var(--at-bg3) !important; }
@@ -208,7 +208,7 @@ td[class*="torrent-search--list__"] { background-color: transparent !important; 
 .af-row { background-color: var(--at-bg2) !important; border-bottom: 0.5px solid var(--at-border) !important; border-left: 3px solid transparent !important; transition: box-shadow .15s, background .15s !important; }
 .af-row:hover { box-shadow: inset 3px 0 0 var(--at-gold) !important; background-color: rgba(245,166,35,0.03) !important; }
 
-tr.torrent-search--list__sticky-row { background-color: rgba(245,166,35,0.05) !important; border-left: 3px solid var(--at-gold) !important; box-shadow: inset 3px 0 0 var(--at-gold) !important; }
+tr.torrent-search--list__sticky-row { background-color: #101524 !important; border-left: 3px solid var(--at-gold) !important; box-shadow: inset 3px 0 0 var(--at-gold) !important; }
 tr.torrent-search--list__sticky-row td { background-color: transparent !important; }
 tr.torrent-search--list__sticky-row .torrent-search--list__name > a:first-child { color: var(--at-text) !important; }
 
