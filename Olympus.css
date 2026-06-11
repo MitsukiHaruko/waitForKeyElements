@@ -267,6 +267,7 @@ li.subforum-listings__item { background-color: var(--at-bg2) !important; border-
 li.subforum-listings__item:nth-child(even) { background-color: var(--at-bg3) !important; }
 li.subforum-listings__item:hover { border-left: 3px solid var(--at-gold) !important; }
 .key-value__group, div.key-value__group { background-color: var(--at-bg) !important; border: 0.5px solid var(--at-border) !important; border-radius: 0px !important; color: var(--at-text) !important; }
+.trending-poster__download-count { border: 2px solid var(--at-gold2); }
 
 article.post { background-color: var(--at-bg2) !important; border: 0.5px solid var(--at-border) !important; border-radius: var(--at-radius) !important; }
 aside.post__aside { background-color: var(--at-bg3) !important; border-right: 0.5px solid var(--at-border) !important; }
