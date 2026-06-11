@@ -47,11 +47,6 @@
   --color-icons:                   #f5a623;
 }
     
-    
-.panelV2.blocks__news
-    
-    
-
 li.top-nav__dropdown ul li a.top-nav__username i[class*="fa-"] { color: inherit !important; background-color: transparent !important; border-color: transparent !important; }
 a.user-tag__link i.fa-heart { background-color: transparent !important; border-color: transparent !important; }
 
@@ -267,6 +262,7 @@ li.subforum-listings__item:hover { background-color: rgba(245,166,35,0.04) !impo
 article.post { background-color: var(--at-bg2) !important; border: 0.5px solid var(--at-border) !important; border-radius: var(--at-radius) !important; }
 aside.post__aside { background-color: var(--at-bg3) !important; border-right: 0.5px solid var(--at-border) !important; }
 menu.post__toolbar { background-color: #1c2540 !important; border-top: 0.5px solid var(--at-border) !important; }
+.post__footer { background-color: #141825 !important }
 article.comment { background-color: var(--at-bg2) !important; border: 0.5px solid var(--at-border) !important; border-radius: var(--at-radius) !important; }
 aside.comment__aside { background-color: var(--at-bg3) !important; border-right: 0.5px solid var(--at-border) !important; }
 ul.comment-list { background-color: var(--at-bg2) !important; }
