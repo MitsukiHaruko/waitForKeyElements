@@ -18,7 +18,7 @@
   --at-bg:        #080b16;
   --at-bg2:       #111928;
   --at-bg3:       #171e33;
-  --at-border:    rgba(255,255,255,0.17);
+  --at-border:    rgba(255,255,255,0.07);
   --at-gold:      #f5a623;
   --at-gold2:     #d4891a;
   --at-goldfaint: rgba(245,166,35,0.14);
@@ -321,7 +321,7 @@ select.form__select option { background-color: var(--at-bg3) !important; color: 
 select.form__select option:checked { background-color: var(--at-bg2) !important; color: var(--at-gold) !important; }
 input:focus, textarea:focus, select:focus, .form__input:focus, [type="search"]:focus, [type="text"]:focus { border-color: rgba(245,166,35,0.6) !important; outline: none !important; box-shadow: 0 0 0 3px rgba(245,166,35,0.12), 0 0 0 1px rgba(245,166,35,0.4) !important; }
 input[type="checkbox"], input[type="radio"] { accent-color: var(--at-gold) !important; }
-input.form__text { border-color: var(--at-border); }
+input.form__text { border-color: rgba(255,255,255,0.17); }
 
 .vscomp-wrapper, .vscomp-ele-wrapper, .vscomp-toggle-button { background-color: var(--at-bg3) !important; border: 0.5px solid var(--at-border) !important; border-radius: 6px !important; color: var(--at-text2) !important; }
 .vscomp-toggle-button:hover { border-color: rgba(245,166,35,0.45) !important; }
