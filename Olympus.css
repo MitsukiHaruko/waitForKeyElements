@@ -321,6 +321,7 @@ select.form__select option { background-color: var(--at-bg3) !important; color: 
 select.form__select option:checked { background-color: var(--at-bg2) !important; color: var(--at-gold) !important; }
 input:focus, textarea:focus, select:focus, .form__input:focus, [type="search"]:focus, [type="text"]:focus { border-color: rgba(245,166,35,0.6) !important; outline: none !important; box-shadow: 0 0 0 3px rgba(245,166,35,0.12), 0 0 0 1px rgba(245,166,35,0.4) !important; }
 input[type="checkbox"], input[type="radio"] { accent-color: var(--at-gold) !important; }
+input.form__text { border-color: var(--at-border); }
 
 .vscomp-wrapper, .vscomp-ele-wrapper, .vscomp-toggle-button { background-color: var(--at-bg3) !important; border: 0.5px solid var(--at-border) !important; border-radius: 6px !important; color: var(--at-text2) !important; }
 .vscomp-toggle-button:hover { border-color: rgba(245,166,35,0.45) !important; }
@@ -531,6 +532,7 @@ input[type="file"]::file-selector-button:hover { background-color: var(--at-gold
 .page__torrent--create .form__group--horizontal .form__label--floating { background-color: var(--at-bg2) !important; }
 .page__torrent--create fieldset .form__label--floating { background-color: var(--at-bg3) !important; }
 .page__torrent--create .panel__sub-heading { border-radius: 6px !important; margin-top: 16px !important; border: none !important; }
+label.form__label.form__label--floating { background-color: transparent !important; }
 
 .topic-listing__post-stats,
 .topic-listing__view-stats {
