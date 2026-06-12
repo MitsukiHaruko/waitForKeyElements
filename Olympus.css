@@ -488,7 +488,7 @@ a[style*="color:#95A5A6"],a[style*="color: #95A5A6"] { color: #95A5A6 !important
 .page__user-conversation--show .bbcode-input__input { min-height: 200px !important; }
 .page__topic--show .bbcode-input__input { min-height: 180px !important; }
 .bbcode-input__tab-input:checked + .bbcode-input__tab-label { color: var(--at-gold) !important; border-bottom-color: var(--at-gold) !important; }
-.bbcode-rendered__clipboard { background-color: var(--at-bg3) !important; opacity: 0.85 !important; }
+.bbcode-rendered__clipboard { background-color: #b1c2e112 !important; opacity: 0.85 !important; }
 
 .post__permalink:hover, .post__edit:hover, .post__quote:hover, .post__delete-button:hover { color: var(--at-gold) !important; background-color: var(--at-bg3) !important; }
 .post__tip-input, .post__tip-input:focus { border: none !important; border-radius: 2px !important; }
