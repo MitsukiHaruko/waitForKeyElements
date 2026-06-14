@@ -578,7 +578,7 @@ li.top-nav__dropdown ul li:hover a.top-nav__username i.fas, li.top-nav__dropdown
 .dialog__actions, .dialog__action { background-color: var(--at-bg3) !important; }
 dialog.dialog--auto-width tr:hover td { background-color: #222e48 !important; }
 
-.group-requirements__group--requirement-row, .group-requirements__group--requirement-multirow { background-color: var(--at-bg3) !important; }
+.group-requirements__group--requirement-row, .group-requirements__group--requirement-multirow { background-color: var(--key-value-even-bg) !important; }
 
 article.achievement { background-color: var(--at-bg3) !important; border: 0.5px solid var(--at-border) !important; border-radius: var(--at-radius) !important; }
 article.achievement progress.achievement__progress { accent-color: var(--at-gold) !important; }
@@ -774,6 +774,12 @@ ul.torrent__tags .torrent-icons {
   color: var(--at-text2) !important;
   text-decoration: none !important;
   font-weight: inherit !important;
+}
+
+.bbcode-input__icon-bar .form__button--text abbr {
+  color: #a2701e !important;
+  filter: none !important;
+  font-weight: 600 !important;
 }
 
 .donation-packages {
@@ -1011,9 +1017,11 @@ input[type="checkbox"]:disabled {
 .group-requirements__group-wrapper { border: 1px solid var(--at-goldfaint) !important; border-radius: var(--at-radius) !important; }
 .group-requirements__group--header i.fa-plus-circle, .group-requirements__group--header i.fa-minus-circle, i.fa-plus-circle.fa-pull-right, i.fa-minus-circle.fa-pull-right { color: var(--at-gold) !important; }
 .group-requirements__perk, .group-requirements__perk-extended { background-color: rgba(255,255,255,0.04) !important; border: 1px solid rgba(245,166,35,0.15) !important; border-radius: var(--at-radius-sm, 6px) !important; }
+.group-requirements__group--requirement-row > div:first-child > i.fas:not(.text-green):not(.text-red):not(.fa-check):not(.fa-times):not(.fa-plus-circle):not(.fa-minus-circle) { color: var(--at-text2) !important; }
 
-.group-requirements__group-wrapper:hover { background-color: var(--at-bg3) !important; border-color: rgba(245,166,35,0.18) !important; }
-.group-requirements__group--requirement-row:hover { background-color: inherit !important; }
+.group-requirements__group-wrapper:hover { background-color: var(--key-value-even-bg) !important; border-color: var(--at-goldfaint) !important; }
+.group-requirements__group--requirement-row, .group-requirements__group--requirement-row:hover { background-color: transparent !important; }
+.group-requirements__group-wrapper table td, .group-requirements__group-wrapper table th { background-color: transparent !important; border-color: var(--at-border) !important; }
 .group-requirements__perk:hover, .group-requirements__perk-extended:hover { background-color: rgba(255,255,255,0.04) !important; border-color: rgba(245,166,35,0.15) !important; }
 
 .breadcrumbsV2 .breadcrumb--active::before { padding-right: 0.5ch !important; }
