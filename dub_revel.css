@@ -1,0 +1,132 @@
+body {
+  font-family: 'Source Sans Pro', ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+}
+
+.top-nav__ratio-bar {
+  font-weight: bold;
+}
+
+.top-nav__main-menus li i {
+  display: none;
+}
+
+.top-nav__main-menus > li:nth-child(1) {
+  background: #232222 !important;
+  border-top-left-radius: 10px;
+  border-right: 1px solid rgba(85, 85, 85, 0.5);
+  border-bottom: 1px solid rgba(85, 85, 85, 0.5);
+}
+
+.top-nav__main-menus > li:nth-child(1) > ul {
+  background: #232222 !important;
+  border-top: 1px solid rgba(85, 85, 85, 0.5);
+}
+
+.top-nav__main-menus > li:nth-child(2) {
+  background: #232222;
+  border-right: 1px solid rgba(85, 85, 85, 0.5);
+  border-bottom: 1px solid rgba(85, 85, 85, 0.5);
+}
+
+.top-nav__main-menus > li:nth-child(2) > ul {
+  background: #232222;
+  border-top: 1px solid rgba(85, 85, 85, 0.5);
+}
+
+.top-nav__main-menus > li:nth-child(3) {
+  background: #232222;
+  border-right: 1px solid rgba(85, 85, 85, 0.5);
+  border-bottom: 1px solid rgba(85, 85, 85, 0.5);
+}
+
+.top-nav__main-menus > li:nth-child(3) > ul {
+  background: #232222;
+  border-top: 1px solid rgba(85, 85, 85, 0.5);
+}
+
+.top-nav__main-menus > li:nth-child(4) {
+  background: #232222;
+  border-top-right-radius: 10px;
+  border-bottom: 1px solid rgba(85, 85, 85, 0.5);
+}
+
+.top-nav__main-menus > li:nth-child(4) > ul {
+  background: #232222;
+  border-top: 1px solid rgba(85, 85, 85, 0.5);
+}
+
+.top-nav__main-menus > li:nth-child(5),
+.top-nav__main-menus > li:nth-child(6),
+.top-nav__main-menus > li:nth-child(7) {
+  display: none;
+}
+
+.top-nav__main-menus > li:nth-child(5) > ul,
+.top-nav__main-menus > li:nth-child(6) > ul,
+.top-nav__main-menus > li:nth-child(7) > ul {
+  display: none;
+}
+
+.top-nav__main-menus > li:last-child {
+  border-top-right-radius: 10px;
+}
+
+.top-nav__branding {
+  display: none;
+}
+
+.footer__sub-footer {
+  display: none;
+}
+
+.footer__section:first-child {
+  display: none;
+}
+
+.panel__tabs {
+  display: none;
+}
+
+.torrent-search--list__rating,
+.torrent-search--list__ratings-header {
+  display: none;
+}
+
+.torrent-search--list__no-poster-headers,
+.torrent-search--list__no-poster-row {
+  grid-template-columns: 100px 1fr 100px 100px 50px 50px 50px;
+  grid-template-areas: "format overview buttons size seeders leechers completed";
+}
+
+.torrent-search--list__age-header,
+.torrent-search--list__age {
+  display: none;
+}
+
+.page__torrents {
+  margin: 0 !important;
+}
+
+.torrent-search--list__name:visited {
+  color: var(--torrent-row-visited-fg);
+}
+
+a {
+  text-decoration: none;
+  outline: 0;
+  transition: none;
+  color: #fff
+}
+
+.user-profile-card__banner {
+  background-image: none;
+}
+
+.chatbox__chatroom {
+  height: 700px;
+}
+
+@media (min-height: 2000px) {
+  .chatbox__chatroom {
+    height: 1800px;
+  }
