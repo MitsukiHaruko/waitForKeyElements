@@ -63,7 +63,11 @@
 }
     
 .quick-search__result-name {
-    font-weight: bold;
+    font-weight: 600;
+    font-size: 14px;
+}
+.quick-search__result-type {
+    font-weight: 350;
 }
 
 li.top-nav__dropdown ul li a.top-nav__username i[class*="fa-"] { color: inherit !important; background-color: transparent !important; border-color: transparent !important; }
