@@ -914,8 +914,6 @@ input[type="checkbox"]:disabled {
 .page__stats--index .key-value__group--nested > dd { margin: 0 !important; }
 .page__stats--index .key-value { gap: 0 !important; }
 
-i.category__icon { color: #bababa !important; }
-
 #chatbox_header .form__button--text,
 .panelV2.chatbox .panel__header .form__button--text {
   color: var(--at-text2) !important;
