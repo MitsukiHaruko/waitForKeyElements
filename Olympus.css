@@ -54,6 +54,14 @@
   --color-purple:                  #a744a7;
 }
 
+    .quick-search__image {
+  border: solid 1px #454859 !important;
+  box-sizing: border-box !important;
+  width: 50px;
+  height: 75px;
+  border-radius: var(--quick-search-result-image-border-radius);
+}
+
 li.top-nav__dropdown ul li a.top-nav__username i[class*="fa-"] { color: inherit !important; background-color: transparent !important; border-color: transparent !important; }
 a.user-tag__link i.fa-heart { background-color: transparent !important; border-color: transparent !important; }
 .user-profile-card__section.user-profile-card__banner { filter: brightness(0.85); }
