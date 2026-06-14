@@ -61,6 +61,10 @@
   height: 75px;
   border-radius: var(--quick-search-result-image-border-radius);
 }
+    
+.quick-search__result-name {
+    font-weight: bold;
+}
 
 li.top-nav__dropdown ul li a.top-nav__username i[class*="fa-"] { color: inherit !important; background-color: transparent !important; border-color: transparent !important; }
 a.user-tag__link i.fa-heart { background-color: transparent !important; border-color: transparent !important; }
