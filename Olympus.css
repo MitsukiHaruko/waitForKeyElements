@@ -54,6 +54,12 @@
   --color-purple:                  #a744a7;
 }
 
+    #currentChatroom.form__select, #currentChatstatus.form__select { background-color: #1e2434 !important; border: 1px solid var(--at-border) !important; border-radius: 6px !important; box-shadow: none !important; color: var(--at-text) !important; color-scheme: dark;
+    font-weight: 350;
+    font-size: 12px;
+}
+    #chatbox_header .form__select:hover { border-color: rgba(255,255,255,0.14) !important; }
+
     .quick-search__image {
   border: solid 2px #454859 !important;
   box-sizing: border-box !important;
@@ -556,8 +562,6 @@ a[style*="color:#95A5A6"],a[style*="color: #95A5A6"] { color: #95A5A6 !important
 .top-nav__dropdown a.top-nav__username i.fas, .top-nav__dropdown a.top-nav__username i.far { background-color: transparent !important; border-color: transparent !important; }
 li.top-nav__dropdown ul li:hover a.top-nav__username i.fas, li.top-nav__dropdown ul li a.top-nav__username:hover i.fas { background-color: transparent !important; border-color: transparent !important; }
 .top-nav__dropdown a.top-nav__username, li a.top-nav__username, li.top-nav__dropdown ul li a.top-nav__username, li.top-nav__dropdown ul li a.top-nav__username:hover { background-color: transparent !important; }
-#chatbox_header .form__select { border-color: rgba(245,166,35,0.22) !important; }
-#chatbox_header .form__select:hover { border-color: rgba(245,166,35,0.45) !important; }
 
 #chatbox_header .panel__action { flex: 0 0 auto !important; }
 #currentChatroom.form__select { width: 132px !important; min-width: 132px !important; max-width: 132px !important; flex: 0 0 auto !important; box-sizing: border-box !important; }
