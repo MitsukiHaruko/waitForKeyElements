@@ -54,22 +54,6 @@
   --color-purple:                  #a744a7;
 }
 
-    .quick-search__image {
-  border: solid 2px var(--at-border) !important;
-  box-sizing: border-box !important;
-  width: 46px;
-  height: 69px;
-  border-radius: var(--quick-search-result-image-border-radius);
-}
-    
-.quick-search__result-name {
-    font-weight: 600;
-    font-size: 14px;
-}
-.quick-search__result-type {
-    font-weight: 350;
-}
-
 li.top-nav__dropdown ul li a.top-nav__username i[class*="fa-"] { color: inherit !important; background-color: transparent !important; border-color: transparent !important; }
 a.user-tag__link i.fa-heart { background-color: transparent !important; border-color: transparent !important; }
 .user-profile-card__section.user-profile-card__banner { filter: brightness(0.85); }
@@ -151,6 +135,10 @@ article.quick-search__result { border-bottom: 1px solid rgba(0, 0, 0, .15) !impo
 article.quick-search__result:last-child { border-bottom: none !important; }
 article.quick-search__result:hover { background-color: rgba(245,166,35,0.06) !important; }
 .quick-search__results { background-color: #060a12 !important; border: 1px solid rgba(245,166,35,0.6) !important; border-top: none !important; border-radius: 0 0 var(--at-radius) var(--at-radius) !important; overflow-y: auto !important; overflow-x: hidden !important; }
+.quick-search__image { border: solid 2px var(--at-border) !important; box-sizing: border-box !important; width: 46px !important; height: 69px !important; border-radius: 6px !important; object-fit: cover !important; }
+.quick-search__result-name { font-weight: 600 !important; font-size: 14px !important; }
+.quick-search__result-type { font-weight: 350 !important; color: var(--at-text2) !important; }
+.quick-search__result-year { color: var(--at-text2) !important; }
 
 .panelV2 { background-color: var(--at-bg2) !important; border: 0.5px solid var(--at-border) !important; border-radius: var(--at-radius) !important; box-shadow: 0 4px 24px rgba(0,0,0,0.5) !important; }
 .panel__heading { background-color: var(--at-bg3) !important; border-bottom: 1px solid var(--at-goldfaint) !important; color: var(--at-gold) !important; font-weight: 600 !important; letter-spacing: .04em !important; border-radius: var(--at-radius) var(--at-radius) 0 0 !important; padding-left: 16px !important; }
