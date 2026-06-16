@@ -61,7 +61,7 @@
     #chatbox_header .form__select:hover { border-color: rgba(255,255,255,0.14) !important; }
 
     .quick-search__image {
-  border: solid 2px #454859 !important;
+  border: solid 2px var(--at-border) !important;
   box-sizing: border-box !important;
   width: 46px;
   height: 69px;
