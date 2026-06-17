@@ -990,23 +990,46 @@ input[type="checkbox"]:disabled {
 .group-requirements__wrapper { grid-template-columns: 1fr 1fr !important; gap: 0 32px !important; align-items: start !important; }
 .group-requirements__path-wrapper > h3.text-center { font-size: 10px !important; font-weight: 700 !important; letter-spacing: .18em !important; text-transform: uppercase !important; color: var(--at-text2) !important; padding: 6px 0 12px !important; border-bottom: 1px solid var(--at-goldfaint) !important; margin-bottom: 8px !important; }
 
-/* Completely remove the targeted groups */
-.panelV2:nth-of-type(1) .group-requirements__path-wrapper:nth-child(1) 
-.group-requirements__group-wrapper:nth-child(-n+8) > *:not(.group-requirements__group--header),
-.panelV2:nth-of-type(1) .group-requirements__path-wrapper:nth-child(2) 
-.group-requirements__group-wrapper:nth-child(-n+8) {
+.panelV2:nth-of-type(1) .group-requirements__path-wrapper:nth-child(1) .group-requirements__group-wrapper:nth-child(-n+8) > *:not(.group-requirements__group--header) {
     display: none !important;
 }
 
-/* Optional: also collapse the containers themselves if you want zero space */
-.panelV2:nth-of-type(1) .group-requirements__path-wrapper:nth-child(1) 
-.group-requirements__group-wrapper:nth-child(-n+8) {
-    display: none !important;
+.panelV2:nth-of-type(1) .group-requirements__path-wrapper:nth-child(1) .group-requirements__group-wrapper:nth-child(-n+8) {
     padding: 0 !important;
-    margin: 0 !important;
-    border: none !important;
-    height: 0 !important;
-    overflow: hidden !important;
+    border: 1px solid var(--at-border) !important;
+    opacity: 0.45 !important;
+    background: var(--at-bg2) !important;
+    border-radius: var(--at-radius, 6px) !important;
+}
+
+.panelV2:nth-of-type(1) .group-requirements__path-wrapper:nth-child(1) .group-requirements__group-wrapper:nth-child(-n+8) .group-requirements__group--header {
+    padding: 7px 14px !important;
+}
+
+.panelV2:nth-of-type(1) .group-requirements__path-wrapper:nth-child(1) .group-requirements__group-wrapper:nth-child(-n+8) i.fa-plus-circle,
+.panelV2:nth-of-type(1) .group-requirements__path-wrapper:nth-child(1) .group-requirements__group-wrapper:nth-child(-n+8) i.fa-minus-circle {
+    display: none !important;
+}
+
+.panelV2:nth-of-type(1) .group-requirements__path-wrapper:nth-child(2) .group-requirements__group-wrapper:nth-child(-n+8) > *:not(.group-requirements__group--header) {
+    display: none !important;
+}
+
+.panelV2:nth-of-type(1) .group-requirements__path-wrapper:nth-child(2) .group-requirements__group-wrapper:nth-child(-n+8) {
+    padding: 0 !important;
+    border: 1px solid var(--at-border) !important;
+    opacity: 0.45 !important;
+    background: var(--at-bg2) !important;
+    border-radius: var(--at-radius, 6px) !important;
+}
+
+.panelV2:nth-of-type(1) .group-requirements__path-wrapper:nth-child(2) .group-requirements__group-wrapper:nth-child(-n+8) .group-requirements__group--header {
+    padding: 7px 14px !important;
+}
+
+.panelV2:nth-of-type(1) .group-requirements__path-wrapper:nth-child(2) .group-requirements__group-wrapper:nth-child(-n+8) i.fa-plus-circle,
+.panelV2:nth-of-type(1) .group-requirements__path-wrapper:nth-child(2) .group-requirements__group-wrapper:nth-child(-n+8) i.fa-minus-circle {
+    display: none !important;
 }
     
 .group-requirements__group-wrapper:has(h3 span[style*="b8c8ff"])::after, .group-requirements__group-wrapper:has(h3 span[style*="a5b8ff"])::after, .group-requirements__group-wrapper:has(h3 span[style*="7f8eff"])::after, .group-requirements__group-wrapper:has(h3 span[style*="508bf2"])::after, .group-requirements__group-wrapper:has(h3 span[style*="6c7eff"])::after, .group-requirements__group-wrapper:has(h3 span[style*="596eff"])::after, .group-requirements__group-wrapper:has(h3 span[style*="466eff"])::after, .group-requirements__group-wrapper:has(h3 span[style*="214e96"])::after, .group-requirements__group-wrapper:has(h3 span[style*="66d9a3"])::after, .group-requirements__group-wrapper:has(h3 span[style*="47c98d"])::after, .group-requirements__group-wrapper:has(h3 span[style*="39b87d"])::after, .group-requirements__group-wrapper:has(h3 span[style*="2fa36e"])::after, .group-requirements__group-wrapper:has(h3 span[style*="258a5d"])::after, .group-requirements__group-wrapper:has(h3 span[style*="1a6b48"])::after { visibility: hidden !important; }
