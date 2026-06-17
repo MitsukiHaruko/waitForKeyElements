@@ -130,3 +130,59 @@ a {
   .chatbox__chatroom {
     height: 1800px;
   }
+}
+
+.alert__statuspage-status {
+  padding: 5px;
+  margin: 0 auto;
+  min-width: 1024px;
+}
+
+.torrent-search--list__name {
+  font-size: 11px;
+}
+
+div.group-requirements__group-wrapper:nth-of-type(1),
+div.group-requirements__group-wrapper:nth-of-type(2),
+div.group-requirements__group-wrapper:nth-of-type(3),
+div.group-requirements__group-wrapper:nth-of-type(4),
+div.group-requirements__group-wrapper:nth-of-type(5),
+div.group-requirements__group-wrapper:nth-of-type(6),
+div.group-requirements__group-wrapper:nth-of-type(7) {
+  display: none !important;
+}
+
+.post__aside {
+  width: 150px;
+}
+
+.top-nav__ratio-bar.top-nav__ratio-bar {
+  justify-content: center;
+}
+
+.form__button--filled {
+  background: #1a1a1a;
+}
+
+.votes__like,
+.votes__dislike {
+  color: #fff;
+}
+
+.nav-tabsV2 {
+  scrollbar-width: thin;
+  display: flex;
+  overflow-x: auto;
+  max-width: 100%;
+  flex-wrap: nowrap;
+  overflow-y: hidden;
+}
+
+.top-nav__dropdown ul li a i,
+.top-nav__dropdown ul li button i {
+  display: none;
+}
+
+.torrent-search__filters {
+  margin: 0 !important;
+}
