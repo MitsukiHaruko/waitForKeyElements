@@ -1,17 +1,17 @@
 // ==UserScript==
-// @name Aither companion
-// @version 1.4
-// @description Added Letterboxd ratings under 'Extra Information', Added Aither direct link on Letterboxd, made section types collapsible on torrent tables, moved Full Discs to the bottom + Torrent Title Cleaner + IMDb Parental Guidance Notes
-// @match *://aither.cc/torrents/*
-// @match *://aither.cc/requests/*
-// @match *://aither.cc/torrents/similar/*
-// @match *://letterboxd.com/film/*
-// @updateURL https://mitsukiharuko.github.io/waitForKeyElements/Aither_Companion.user.js
-// @downloadURL https://mitsukiharuko.github.io/waitForKeyElements/Aither_Companion.user.js
-// @namespace https://github.com/frenchcutgreenbean/UNIT3D-IS-COOL/
-// @author mitsuki
-// @icon https://i.imgur.com/caImJHQ.png
-// @grant GM.xmlHttpRequest
+// @name         Aither companion
+// @version      1.5
+// @description  Added Letterboxd ratings under 'Extra Information', Added Aither direct link on Letterboxd, made section types collapsible on torrent tables, moved Full Discs to the bottom + Torrent Title Cleaner + IMDb Parental Guidance Notes
+// @match        *://aither.cc/torrents/*
+// @match        *://aither.cc/requests/*
+// @match        *://aither.cc/torrents/similar/*
+// @match        *://letterboxd.com/film/*
+// @updateURL    https://mitsukiharuko.github.io/waitForKeyElements/Aither_Companion.user.js
+// @downloadURL  https://mitsukiharuko.github.io/waitForKeyElements/Aither_Companion.user.js
+// @namespace    https://github.com/frenchcutgreenbean/UNIT3D-IS-COOL/
+// @author       mitsuki
+// @icon         https://i.imgur.com/caImJHQ.png
+// @grant        GM.xmlHttpRequest
 // ==/UserScript==
 
 (function () {
@@ -29,15 +29,18 @@
         { regex: /\bHEVC\b|\bH\.?265\b|\bH265\b|\bx265\b/i, value: 'H.265' },
         { regex: /\bAVC\b|\bH\.?264\b|\bH264\b|\bx264\b/i, value: 'H.264' },
         { regex: /\bAV1\b/i, value: 'AV1' },
+        { regex: /\bMPEG-?2\b|\bMPEG2\b/i, value: 'MPEG-2' },
     ];
-    const RESOLUTIONS = ['4320p', '2160p', '1080p', '1080i', '720p'];
+
+    const RESOLUTIONS = ['4320p', '2160p', '1080p', '1080i', '720p', '480p', '576p'];
+
     const SOURCE_PATTERNS = [
         { regex: /\bUHD[\s-]*Blu-?ray\b/i, value: 'UHD BluRay' },
         { regex: /\bBlu-?ray\b/i, value: 'BluRay' },
         { regex: /\bWEB[-\s]?DL\b/i, value: 'WEB-DL' },
         { regex: /\bWEBRip\b/i, value: 'WEBRip' },
         { regex: /\bHDTV\b/i, value: 'HDTV' },
-        { regex: /\bDVD\b/i, value: 'DVD' },
+        { regex: /\b(?:2x)?DVD/i, value: 'DVD' },
     ];
 
     const extractReleaseGroup = (normalized) => {
@@ -46,7 +49,7 @@
         let candidate = normalized.slice(lastDashIndex + 1).trim();
         if (/^[A-Za-z0-9]{2,12}$/.test(candidate) ||
             /^[A-Za-z0-9]+(?:[._-][A-Za-z0-9]+)*$/.test(candidate)) {
-            if (!/^(?:2160|1080|720|480|REPACK|REMUX|Hybrid|DV|HDR|TrueHD|DTS|DD)/i.test(candidate)) {
+            if (!/^(?:2160|1080|720|480|576|REPACK|REMUX|Hybrid|DV|HDR|TrueHD|DTS|DD|NTSC|PAL)/i.test(candidate)) {
                 return {
                     group: candidate,
                     base: normalized.slice(0, lastDashIndex).trim()
@@ -61,8 +64,17 @@
         let normalized = name.replace(/\s+/g, ' ').trim();
         const { group, base } = extractReleaseGroup(normalized);
         normalized = base || normalized;
+
         const resolution = RESOLUTIONS.find(res => new RegExp(`\\b${res}\\b`, 'i').test(normalized)) || '';
-        const source = SOURCE_PATTERNS.find(p => p.regex.test(normalized))?.value || '';
+
+        let source = '';
+        for (const p of SOURCE_PATTERNS) {
+            if (p.regex.test(normalized)) {
+                source = p.value;
+                break;
+            }
+        }
+
         const videoCodec = VIDEO_CODEC_PATTERNS.find(p => p.regex.test(normalized))?.value || '';
 
         let audio = '';
@@ -73,7 +85,8 @@
         else if (/\bDD\+|DDP|E-?AC-?3\b/i.test(normalized)) audio = 'DD+';
         else if (/\bDD\b|\bDolby Digital\b/i.test(normalized)) audio = 'DD';
 
-        const channelsMatch = normalized.match(/\b(\d+\.?\d*)\s*ch\b/i) || normalized.match(/\b(7\.1|5\.1|2\.0|1\.0)\b/i);
+        const channelsMatch = normalized.match(/\b(\d+\.?\d*)\s*ch\b/i) ||
+                             normalized.match(/\b(7\.1|5\.1|2\.0|2\.1|1\.0)\b/i);
         if (channelsMatch && audio) {
             audio += ` ${channelsMatch[1]}`;
         }
@@ -91,6 +104,7 @@
             hybrid,
             group
         ].filter(Boolean);
+
         return parts;
     };
 
@@ -147,7 +161,6 @@
         const ratingValue = document.createElement("h3");
         ratingValue.className = "meta-chip__value";
         ratingValue.innerText = `${rating}★`;
-
         if (count) {
             const span = document.createElement("span");
             span.style.color = "#aaaaaa";
@@ -190,12 +203,13 @@
     function initCollapsibleSimilarTorrents() {
         const table = document.querySelector('.similar-torrents__torrents');
         if (!table) return;
-        let sections = Array.from(table.querySelectorAll('tbody:nth-child(n+2)'));
 
+        let sections = Array.from(table.querySelectorAll('tbody:nth-child(n+2)'));
         const fullDiscIndex = sections.findIndex(tbody => {
             const typeCell = tbody.querySelector('.similar-torrents__type');
             return typeCell && /full.?disc/i.test(typeCell.innerText.trim());
         });
+
         if (fullDiscIndex !== -1) {
             const fullDiscTbody = sections.splice(fullDiscIndex, 1)[0];
             sections.push(fullDiscTbody);
@@ -282,11 +296,14 @@
         a.style.cssText = 'display:inline-flex;align-items:center;background:#445566;color:#9ab;text-shadow:none;background-image:none;box-shadow:none;border-color:transparent;';
         a.addEventListener('mouseover', () => a.style.backgroundColor = '#556677');
         a.addEventListener('mouseout', () => a.style.backgroundColor = '#445566');
+
         const img = document.createElement('img');
         img.src = 'https://aither.cc/favicon/favicon.svg';
         img.style.cssText = 'margin-right:0.5em;width:16px;height:16px;';
+
         const span = document.createElement('span');
         span.textContent = 'View on Aither';
+
         a.append(img, span);
         li.appendChild(a);
         return li;
@@ -297,6 +314,7 @@
         if (!tmdbLink) return;
         const match = tmdbLink.href.match(/\/movie\/(\d+)/);
         if (!match) return;
+
         runWhenReady(".js-actions-panel", container => {
             container.appendChild(createAitherLinkButton(match[1]));
         });
@@ -304,10 +322,6 @@
 
     /* ====================== IMDb PARENTAL GUIDANCE HELPER ====================== */
     function initParentalGuidance() {
-        let hidetext = false;
-        let isToggleableSections = true;
-        let hideSpoilers = false;
-
         const style = document.createElement('style');
         style.textContent = `
             .parentalspoiler { color: transparent; }
@@ -323,16 +337,10 @@
         document.head.appendChild(style);
 
         const imdbAnchor = document.querySelector('a[href*="imdb.com/title/tt"]');
-        if (!imdbAnchor) {
-            console.warn('[Parental Guide] No IMDb link found.');
-            return;
-        }
+        if (!imdbAnchor) return;
         const match = imdbAnchor.href.match(/tt\d+/);
         const imdbId = match ? match[0] : null;
-        if (!imdbId) {
-            console.warn('[Parental Guide] Could not parse IMDb ID.');
-            return;
-        }
+        if (!imdbId) return;
 
         const advisoryDiv = document.createElement('div');
         const newPanel = document.createElement('section');
@@ -430,12 +438,7 @@
 
                         const severity = document.createElement('span');
                         const sev = cat?.severity?.text || 'Unknown';
-                        const colorMap = {
-                            None: '#F2DB83',
-                            Mild: '#c5e197',
-                            Moderate: '#fbca8c',
-                            Severe: '#ffb3ad'
-                        };
+                        const colorMap = { None: '#F2DB83', Mild: '#c5e197', Moderate: '#fbca8c', Severe: '#ffb3ad' };
                         severity.style.color = colorMap[sev] || '#ccc';
                         severity.textContent = sev;
 
@@ -445,25 +448,13 @@
 
                         const list = document.createElement('ul');
                         list.style.margin = '0 15px';
-                        if (isToggleableSections) list.classList.add('hide');
+                        list.classList.add('hide');
 
                         cat.guideItems.edges.forEach(edge => {
                             const li = document.createElement('li');
                             const a = document.createElement('a');
                             a.style.color = 'inherit';
                             a.textContent = edge.node.text.plainText;
-
-                            if (hidetext) a.classList.add('parentalspoiler');
-
-                            if (edge.node.isSpoiler && hideSpoilers) {
-                                const original = edge.node.text.plainText;
-                                a.textContent = 'Potential Spoilers';
-                                a.style.textDecoration = 'underline';
-                                a.onclick = (e) => {
-                                    const el = e.target;
-                                    el.textContent = el.textContent === original ? 'Potential Spoilers' : original;
-                                };
-                            }
                             li.appendChild(a);
                             list.appendChild(li);
                         });
@@ -472,16 +463,11 @@
                         container.appendChild(list);
                         advisoryDiv.appendChild(container);
 
-                        if (isToggleableSections) {
-                            h4.onclick = () => list.classList.toggle('hide');
-                        }
+                        h4.onclick = () => list.classList.toggle('hide');
                     });
                 } catch (e) {
                     console.error('[Parental Guide] Parse error:', e);
                 }
-            },
-            onerror: function (err) {
-                console.error('[Parental Guide] Request failed:', err);
             }
         });
     }
