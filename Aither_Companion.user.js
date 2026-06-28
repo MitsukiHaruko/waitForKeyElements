@@ -1,17 +1,17 @@
 // ==UserScript==
-// @name         Aither companion
-// @version      1.0
-// @description  Added Letterboxd ratings under 'Extra Information', Added Aither direct link on Letterboxd, made section types collapsible on torrent tables and moved Full Discs to the bottom.
-// @match        *://aither.cc/torrents/*
-// @match        *://aither.cc/requests/*
-// @match        *://aither.cc/torrents/similar/*
-// @match        *://letterboxd.com/film/*
-// @updateURL    https://mitsukiharuko.github.io/waitForKeyElements/Aither_Companion.user.js
-// @downloadURL  https://mitsukiharuko.github.io/waitForKeyElements/Aither_Companion.user.js
-// @namespace    https://github.com/frenchcutgreenbean/UNIT3D-IS-COOL/
-// @author       mitsuki
-// @icon         https://i.imgur.com/caImJHQ.png
-// @grant        GM.xmlHttpRequest
+// @name Aither companion
+// @version 1.4
+// @description Added Letterboxd ratings under 'Extra Information', Added Aither direct link on Letterboxd, made section types collapsible on torrent tables, moved Full Discs to the bottom + Torrent Title Cleaner + IMDb Parental Guidance Notes
+// @match *://aither.cc/torrents/*
+// @match *://aither.cc/requests/*
+// @match *://aither.cc/torrents/similar/*
+// @match *://letterboxd.com/film/*
+// @updateURL https://mitsukiharuko.github.io/waitForKeyElements/Aither_Companion.user.js
+// @downloadURL https://mitsukiharuko.github.io/waitForKeyElements/Aither_Companion.user.js
+// @namespace https://github.com/frenchcutgreenbean/UNIT3D-IS-COOL/
+// @author mitsuki
+// @icon https://i.imgur.com/caImJHQ.png
+// @grant GM.xmlHttpRequest
 // ==/UserScript==
 
 (function () {
@@ -24,17 +24,105 @@
         document.head.appendChild(style);
     }
 
+    /* ====================== UNIT3D - TORRENT TITLE CLEANER ====================== */
+    const VIDEO_CODEC_PATTERNS = [
+        { regex: /\bHEVC\b|\bH\.?265\b|\bH265\b|\bx265\b/i, value: 'H.265' },
+        { regex: /\bAVC\b|\bH\.?264\b|\bH264\b|\bx264\b/i, value: 'H.264' },
+        { regex: /\bAV1\b/i, value: 'AV1' },
+    ];
+    const RESOLUTIONS = ['4320p', '2160p', '1080p', '1080i', '720p'];
+    const SOURCE_PATTERNS = [
+        { regex: /\bUHD[\s-]*Blu-?ray\b/i, value: 'UHD BluRay' },
+        { regex: /\bBlu-?ray\b/i, value: 'BluRay' },
+        { regex: /\bWEB[-\s]?DL\b/i, value: 'WEB-DL' },
+        { regex: /\bWEBRip\b/i, value: 'WEBRip' },
+        { regex: /\bHDTV\b/i, value: 'HDTV' },
+        { regex: /\bDVD\b/i, value: 'DVD' },
+    ];
+
+    const extractReleaseGroup = (normalized) => {
+        const lastDashIndex = normalized.lastIndexOf('-');
+        if (lastDashIndex === -1) return { group: '', base: normalized };
+        let candidate = normalized.slice(lastDashIndex + 1).trim();
+        if (/^[A-Za-z0-9]{2,12}$/.test(candidate) ||
+            /^[A-Za-z0-9]+(?:[._-][A-Za-z0-9]+)*$/.test(candidate)) {
+            if (!/^(?:2160|1080|720|480|REPACK|REMUX|Hybrid|DV|HDR|TrueHD|DTS|DD)/i.test(candidate)) {
+                return {
+                    group: candidate,
+                    base: normalized.slice(0, lastDashIndex).trim()
+                };
+            }
+        }
+        return { group: '', base: normalized };
+    };
+
+    const formatTorrentName = (name) => {
+        if (!name) return [];
+        let normalized = name.replace(/\s+/g, ' ').trim();
+        const { group, base } = extractReleaseGroup(normalized);
+        normalized = base || normalized;
+        const resolution = RESOLUTIONS.find(res => new RegExp(`\\b${res}\\b`, 'i').test(normalized)) || '';
+        const source = SOURCE_PATTERNS.find(p => p.regex.test(normalized))?.value || '';
+        const videoCodec = VIDEO_CODEC_PATTERNS.find(p => p.regex.test(normalized))?.value || '';
+
+        let audio = '';
+        if (/\bTrueHD\b/i.test(normalized)) audio = 'TrueHD';
+        else if (/\bDTS-HD\s*MA\b/i.test(normalized)) audio = 'DTS-HD MA';
+        else if (/\bDTS-HD\b/i.test(normalized)) audio = 'DTS-HD';
+        else if (/\bDTS\b/i.test(normalized)) audio = 'DTS';
+        else if (/\bDD\+|DDP|E-?AC-?3\b/i.test(normalized)) audio = 'DD+';
+        else if (/\bDD\b|\bDolby Digital\b/i.test(normalized)) audio = 'DD';
+
+        const channelsMatch = normalized.match(/\b(\d+\.?\d*)\s*ch\b/i) || normalized.match(/\b(7\.1|5\.1|2\.0|1\.0)\b/i);
+        if (channelsMatch && audio) {
+            audio += ` ${channelsMatch[1]}`;
+        }
+
+        const hasExplicitHybrid = /\bHybrid\b/i.test(normalized);
+        const hasHDR = /\bHDR(?:10|\+)?\b/i.test(normalized);
+        const hasDV = /\b(?:DV|Dolby.?Vision)\b/i.test(normalized);
+        const hybrid = (hasExplicitHybrid || (hasHDR && hasDV)) ? 'Hybrid' : '';
+
+        const parts = [
+            resolution,
+            source,
+            videoCodec,
+            audio,
+            hybrid,
+            group
+        ].filter(Boolean);
+        return parts;
+    };
+
+    const applyCleanTitle = (element) => {
+        if (!element || element.dataset.cleaned) return;
+        const originalText = element.textContent.trim();
+        const cleanedParts = formatTorrentName(originalText);
+        if (cleanedParts.length === 0) return;
+        element.textContent = cleanedParts.join(' / ');
+        element.dataset.cleaned = '1';
+        element.style.fontWeight = '500';
+    };
+
+    const cleanAllTitles = () => {
+        document.querySelectorAll('.torrent-search--grouped__name a').forEach(applyCleanTitle);
+        document.querySelectorAll('.torrent__name').forEach(applyCleanTitle);
+        document.querySelectorAll('.torrent-search--list__name').forEach(applyCleanTitle);
+        document.querySelectorAll('.similar-torrents__name a, .similar-torrents__name').forEach(applyCleanTitle);
+    };
+
+    const initTitleCleaner = () => {
+        cleanAllTitles();
+        const observer = new MutationObserver(cleanAllTitles);
+        observer.observe(document.body, { childList: true, subtree: true });
+    };
+
     /* ====================== UNIT3D - META RATINGS ====================== */
     function buildElement(siteName, url, logo, rating, count) {
         if (!rating) return;
         const extraHeader = Array.from(document.querySelectorAll("h2"))
             .find(el => el.innerText.trim().toLowerCase() === "extra information");
         if (!extraHeader) return;
-
-        let ratingFloat = parseFloat(rating);
-        let shadowColor = ratingFloat < 2.5 ? "rgba(212, 36, 36, 0.8)" :
-                         ratingFloat < 3.5 ? "rgba(212, 195, 36, 0.8)" :
-                         ratingFloat < 4.3 ? "rgba(0,224,84, 0.8)" : "rgba(113, 251, 255, 0.8)";
 
         const img = document.createElement("img");
         img.className = `${siteName.toLowerCase()}-chip__icon`;
@@ -102,43 +190,35 @@
     function initCollapsibleSimilarTorrents() {
         const table = document.querySelector('.similar-torrents__torrents');
         if (!table) return;
-
         let sections = Array.from(table.querySelectorAll('tbody:nth-child(n+2)'));
 
-        // === Move Full Disc section to the end ===
         const fullDiscIndex = sections.findIndex(tbody => {
             const typeCell = tbody.querySelector('.similar-torrents__type');
             return typeCell && /full.?disc/i.test(typeCell.innerText.trim());
         });
-
         if (fullDiscIndex !== -1) {
             const fullDiscTbody = sections.splice(fullDiscIndex, 1)[0];
             sections.push(fullDiscTbody);
         }
 
-        // Re-append in new order
         sections.forEach(tbody => table.appendChild(tbody));
 
-        // Now set up collapsibles
         const storageKey = 'hiddenSimilarTorrentTypes';
         let hiddenTypes = new Set(JSON.parse(localStorage.getItem(storageKey) || '[]'));
 
         sections.forEach(tbody => {
             const headerRow = tbody.querySelector('tr:first-child');
             if (!headerRow) return;
-
             const typeCell = headerRow.querySelector('.similar-torrents__type');
             if (!typeCell) return;
-
             const typeName = typeCell.innerText.trim();
             if (!typeName) return;
 
-            // Create placeholder
             const placeholder = document.createElement('tr');
             placeholder.className = 'similar-torrents-placeholder';
             placeholder.style.cursor = 'pointer';
             placeholder.innerHTML = `
-                <td colspan="10" style="padding: 6px 10px; font-size: 13px; font-weight: 400; color: #7a80a0;">
+                <td colspan="10" style="padding: 6px 10px 6px 15px; font-size: 13px; font-weight: 400; color: #7a80a0;">
                     ${typeName}
                 </td>
             `;
@@ -151,9 +231,7 @@
                     Array.from(tbody.children).forEach((row, i) => {
                         if (i > 0) row.style.display = 'none';
                     });
-                    if (!placeholder.parentNode) {
-                        headerRow.after(placeholder);
-                    }
+                    if (!placeholder.parentNode) headerRow.after(placeholder);
                 } else {
                     headerRow.style.display = '';
                     Array.from(tbody.children).forEach(row => row.style.display = '');
@@ -169,13 +247,12 @@
                 applyState();
             }
 
-            placeholder.addEventListener('click', toggle);
-            headerRow.style.cursor = 'pointer';
-            headerRow.addEventListener('click', e => {
+            typeCell.style.cursor = 'pointer';
+            typeCell.addEventListener('click', e => {
                 if (e.target.tagName === 'A') return;
                 toggle();
             });
-
+            placeholder.addEventListener('click', toggle);
             applyState();
         });
 
@@ -203,17 +280,13 @@
         a.target = '_blank';
         a.className = 'button -action -has-icon';
         a.style.cssText = 'display:inline-flex;align-items:center;background:#445566;color:#9ab;text-shadow:none;background-image:none;box-shadow:none;border-color:transparent;';
-
         a.addEventListener('mouseover', () => a.style.backgroundColor = '#556677');
         a.addEventListener('mouseout', () => a.style.backgroundColor = '#445566');
-
         const img = document.createElement('img');
         img.src = 'https://aither.cc/favicon/favicon.svg';
         img.style.cssText = 'margin-right:0.5em;width:16px;height:16px;';
-
         const span = document.createElement('span');
         span.textContent = 'View on Aither';
-
         a.append(img, span);
         li.appendChild(a);
         return li;
@@ -224,14 +297,203 @@
         if (!tmdbLink) return;
         const match = tmdbLink.href.match(/\/movie\/(\d+)/);
         if (!match) return;
-
         runWhenReady(".js-actions-panel", container => {
             container.appendChild(createAitherLinkButton(match[1]));
         });
     }
 
+    /* ====================== IMDb PARENTAL GUIDANCE HELPER ====================== */
+    function initParentalGuidance() {
+        let hidetext = false;
+        let isToggleableSections = true;
+        let hideSpoilers = false;
+
+        const style = document.createElement('style');
+        style.textContent = `
+            .parentalspoiler { color: transparent; }
+            .parentalspoiler:hover { color: inherit; }
+            .parentalHeader {
+                color: #aaa;
+                margin-top: 12px;
+                margin-bottom: 5px;
+                cursor: pointer;
+            }
+            .hide { display: none; }
+        `;
+        document.head.appendChild(style);
+
+        const imdbAnchor = document.querySelector('a[href*="imdb.com/title/tt"]');
+        if (!imdbAnchor) {
+            console.warn('[Parental Guide] No IMDb link found.');
+            return;
+        }
+        const match = imdbAnchor.href.match(/tt\d+/);
+        const imdbId = match ? match[0] : null;
+        if (!imdbId) {
+            console.warn('[Parental Guide] Could not parse IMDb ID.');
+            return;
+        }
+
+        const advisoryDiv = document.createElement('div');
+        const newPanel = document.createElement('section');
+        newPanel.className = 'panelV2';
+        newPanel.id = 'parents_guide';
+        newPanel.style.marginTop = '0';
+
+        const header = document.createElement('header');
+        header.className = 'panel__header';
+        const title = document.createElement('h2');
+        title.className = 'panel__heading';
+        title.textContent = 'IMDb Parental Notes';
+        header.appendChild(title);
+
+        const panelBody = document.createElement('div');
+        panelBody.className = 'panel__body';
+        panelBody.style.padding = '.75rem 1rem';
+        panelBody.style.display = 'none';
+        panelBody.appendChild(advisoryDiv);
+
+        newPanel.appendChild(header);
+        newPanel.appendChild(panelBody);
+
+        const torrentGroupPanel = document.querySelector('section.panelV2[x-data="torrentGroup"]');
+        if (torrentGroupPanel) {
+            torrentGroupPanel.insertAdjacentElement('afterend', newPanel);
+        } else {
+            const titleEl = document.querySelector('.meta__title');
+            const anchor = titleEl?.closest('section, div') || document.querySelector('main') || document.body;
+            anchor.insertAdjacentElement('afterend', newPanel);
+        }
+
+        const globalToggle = document.createElement('a');
+        globalToggle.href = '#';
+        globalToggle.style.cssText = 'margin-left:10px;cursor:pointer;font-size:0.9em;display:inline-flex;align-items:center;gap:6px;';
+        const icon = document.createElement('i');
+        icon.className = 'fas fa-minus-circle';
+        globalToggle.appendChild(icon);
+        header.appendChild(globalToggle);
+
+        let panelVisible = true;
+        const togglePanel = (e) => {
+            if (e) e.preventDefault();
+            panelVisible = !panelVisible;
+            panelBody.style.display = panelVisible ? 'block' : 'none';
+            icon.className = panelVisible ? 'fas fa-minus-circle' : 'fas fa-plus-circle';
+        };
+
+        panelBody.style.display = 'block';
+        globalToggle.onclick = togglePanel;
+        header.style.cursor = 'pointer';
+        header.addEventListener('click', (e) => {
+            if (e.target.closest('a')) return;
+            togglePanel(e);
+        });
+
+        const graphQlReq = {
+            query: `query {
+              title(id: "${imdbId}") {
+                parentsGuide {
+                  categories {
+                    category { text }
+                    severity { text }
+                    guideItems(first: 100) {
+                      edges {
+                        node {
+                          ... on ParentsGuideItem {
+                            isSpoiler
+                            text { plainText }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }`
+        };
+
+        GM.xmlHttpRequest({
+            method: 'POST',
+            url: 'https://api.graphql.imdb.com',
+            headers: { 'Content-Type': 'application/json' },
+            data: JSON.stringify(graphQlReq),
+            onload: function (response) {
+                try {
+                    const body = JSON.parse(response.responseText);
+                    const categories = body?.data?.title?.parentsGuide?.categories;
+                    if (!categories) return;
+
+                    categories.forEach(cat => {
+                        const container = document.createElement('div');
+                        const h4 = document.createElement('h4');
+                        h4.className = 'parentalHeader';
+
+                        const severity = document.createElement('span');
+                        const sev = cat?.severity?.text || 'Unknown';
+                        const colorMap = {
+                            None: '#F2DB83',
+                            Mild: '#c5e197',
+                            Moderate: '#fbca8c',
+                            Severe: '#ffb3ad'
+                        };
+                        severity.style.color = colorMap[sev] || '#ccc';
+                        severity.textContent = sev;
+
+                        h4.textContent = `${cat.category.text} - `;
+                        h4.appendChild(severity);
+                        h4.appendChild(document.createTextNode(` - (${cat.guideItems.edges.length})`));
+
+                        const list = document.createElement('ul');
+                        list.style.margin = '0 15px';
+                        if (isToggleableSections) list.classList.add('hide');
+
+                        cat.guideItems.edges.forEach(edge => {
+                            const li = document.createElement('li');
+                            const a = document.createElement('a');
+                            a.style.color = 'inherit';
+                            a.textContent = edge.node.text.plainText;
+
+                            if (hidetext) a.classList.add('parentalspoiler');
+
+                            if (edge.node.isSpoiler && hideSpoilers) {
+                                const original = edge.node.text.plainText;
+                                a.textContent = 'Potential Spoilers';
+                                a.style.textDecoration = 'underline';
+                                a.onclick = (e) => {
+                                    const el = e.target;
+                                    el.textContent = el.textContent === original ? 'Potential Spoilers' : original;
+                                };
+                            }
+                            li.appendChild(a);
+                            list.appendChild(li);
+                        });
+
+                        container.appendChild(h4);
+                        container.appendChild(list);
+                        advisoryDiv.appendChild(container);
+
+                        if (isToggleableSections) {
+                            h4.onclick = () => list.classList.toggle('hide');
+                        }
+                    });
+                } catch (e) {
+                    console.error('[Parental Guide] Parse error:', e);
+                }
+            },
+            onerror: function (err) {
+                console.error('[Parental Guide] Request failed:', err);
+            }
+        });
+    }
+
     /* ====================== MAIN ====================== */
     const pathname = window.location.pathname;
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initTitleCleaner);
+    } else {
+        initTitleCleaner();
+    }
 
     if (/\/(torrents|requests)\//.test(pathname)) {
         getIMDBID();
@@ -242,6 +504,11 @@
             document.addEventListener('DOMContentLoaded', initCollapsibleSimilarTorrents);
         } else {
             initCollapsibleSimilarTorrents();
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initParentalGuidance);
+        } else {
+            initParentalGuidance();
         }
     }
 
