@@ -1,9 +1,10 @@
-3.6
-https://github.com/MitsukiHaruko/waitForKeyElements/raw/refs/heads/main/AnimeBytes_Nightly_3_6.zip
+3.6.1
+https://github.com/MitsukiHaruko/waitForKeyElements/raw/refs/heads/main/AnimeBytes_Nightly_3_6_1.zip
 Latest Changelog:
 
-Maintenance Update, collection of smaller fixes.
-Got around to revamping the Nightly Thread OP: We've got install counts back along with a cute little Gallery view for new users. Added OLED usertheme to style table. Company pages Nightly-fied (same as Collage Pages from last update)
-Unrelatedly, some work has been done on unit3d stylesheets. I left a link about it in the thread a while ago for those interested.
+Forum discussion link for airing shows now searches with cleaned titles. Example issue:
+'Clevatess II' didn't match 'Clevatess Season 2'
 
-That's all for now. Until next time.
+Test:
+
+Following the usual update instructions below, your current userscript settings should now carry over to the new version
