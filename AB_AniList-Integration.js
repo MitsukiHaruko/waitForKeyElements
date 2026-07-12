@@ -16,16 +16,20 @@
 // @require https://github.com/momentary0/AB-Userscripts/raw/master/delicious-library/src/ab_delicious_library.js
 // @run-at document-end
 // ==/UserScript==
+
 (function () {
     'use strict';
+
     const favicons = {
         "AniList": "https://mei.kuudere.pw/ncihtSl6Awu.png",
     };
+
     function normalizeLinkName(txt) {
         if (!txt) return null;
         const t = txt.toLowerCase().trim().replace(/[\s|•…‥.]+/g, '');
         return t.includes('anilist') ? 'AniList' : null;
     }
+
     function replaceLinkWithIcon(a) {
         const text = a.textContent.trim();
         const key = normalizeLinkName(text);
@@ -38,6 +42,7 @@
         a.textContent = '';
         a.appendChild(img);
     }
+
     // ==================== SETTINGS ====================
     if (delicious?.settings?.ensureSettingsInserted?.()) {
         const section = delicious.settings.createCollapsibleSection('Anilist Integration (Trailers, Watchlist, Banners)');
@@ -52,10 +57,12 @@
         body.appendChild(delicious.settings.createCheckbox('ABAniListEnableBanners', 'Show AniList banners', 'Displays the large AniList banner image'));
         delicious.settings.insertSection(section);
     }
+
     const enableTrailers = JSON.parse(GM_getValue('ABAniListEnableTrailers', 'true'));
     const trailerAtTop = JSON.parse(GM_getValue('ABAniListTrailerAtTop', 'false'));
     const autoplayTrailer = JSON.parse(GM_getValue('ABAniListTrailerAutoplay', 'false'));
     const enableBanners = JSON.parse(GM_getValue('ABAniListEnableBanners', 'true'));
+
     // ==================== STYLES ====================
     const bannerStyle = document.createElement('style');
     bannerStyle.textContent = `
@@ -93,43 +100,62 @@
         .favicon-icon:hover { transform: scale(1.18) !important; }
     `;
     document.head.appendChild(bannerStyle);
+
     // ==================== CACHING ====================
-    const CORE_CACHE_TTL = 1000 * 60 * 60 * 24 * 120; //120 days
-    const MEDIA_CACHE_TTL = 1000 * 60 * 60 * 24 * 60; //60 days
+    const CORE_CACHE_TTL = 1000 * 60 * 60 * 24 * 120; // 120 days
+    const MEDIA_CACHE_TTL = 1000 * 60 * 60 * 24 * 60;  // 60 days
+
     function getCacheKey(title, mediaType) {
         return `ab_anilist_${mediaType}_${title.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
     }
+
     function getCachedData(title, mediaType) {
         try {
             const key = getCacheKey(title, mediaType);
             const cached = GM_getValue(key);
             if (!cached) return null;
+
             const data = JSON.parse(cached);
             const age = Date.now() - data.timestamp;
+
             if (!data.media?.id || age >= CORE_CACHE_TTL) {
-                return null; // Core cache expired
+                return null;
             }
-            const hasBanner = !!data.media.bannerImage;
-            const hasTrailer = !!data.media.trailer?.id;
-            // If either banner or trailer is missing OR media cache is stale → force refresh
+
+            const media = data.media;
+            const na = media.nextAiringEpisode;
+            const now = Math.floor(Date.now() / 1000);
+
+            // Smart invalidation: if next episode should have aired >24h ago, force refresh
+            if (na?.airingAt && na.airingAt < now - 86400) {
+                console.log(`%c[AniList] CACHE INVALIDATED: ${media.title.romaji} (old airing time)`, 'color:orange;font-weight:bold');
+                return null;
+            }
+
+            //rich media refresh logic
+            const hasBanner = !!media.bannerImage;
+            const hasTrailer = !!media.trailer?.id;
+
             if (!hasBanner || !hasTrailer || age > MEDIA_CACHE_TTL) {
-                const core = { ...data.media };
+                const core = { ...media };
                 delete core.bannerImage;
                 if (core.trailer) delete core.trailer;
                 return { ...core, _needsMediaRefresh: true };
             }
-            return data.media;
+
+            return media;
         } catch (e) {
             return null;
         }
     }
+
     function cacheData(title, mediaType, media) {
         try {
             const key = getCacheKey(title, mediaType);
             GM_setValue(key, JSON.stringify({ media, timestamp: Date.now() }));
         } catch (e) {}
     }
-    // ... rest of helpers
+
     function getWatchlistCache(id) {
         try {
             const data = GM_getValue(`ab_watchlist_${id}`);
@@ -145,11 +171,13 @@
             return null;
         }
     }
+
     function setWatchlistCache(id, data) {
         try {
             GM_setValue(`ab_watchlist_${id}`, JSON.stringify({ data, timestamp: Date.now() }));
         } catch (e) {}
     }
+
     function getStoredList() {
         try {
             return JSON.parse(GM_getValue('AB_NextEp_WatchList', '[]')) || [];
@@ -157,11 +185,12 @@
             return [];
         }
     }
+
     function saveList(arr) {
         GM_setValue('AB_NextEp_WatchList', JSON.stringify(arr));
     }
+
     // ==================== HELPERS ====================
-    // (formatTimeUntil, getStatusBadge, getWeekdayName, normalizeTitle, calculateScore)
     function formatTimeUntil(seconds, isAiring = false, mediaType = 'ANIME') {
         if (seconds == null || seconds < 0) return "<span class='countdown-prefix'>—</span>";
         const diff = seconds * 1000;
@@ -176,6 +205,7 @@
         const prefix = isAiring ? 'Airing in ' : (mediaType === 'ANIME' ? 'Next ep in ' : 'Next ch in ');
         return `<span class="countdown-prefix">${prefix}</span><span class="countdown-time">${timeStr}</span>`;
     }
+
     function getStatusBadge(status) {
         const badges = {
             FINISHED: { text: 'Finished', color: '#2196F3' },
@@ -186,10 +216,12 @@
         const style = badges[status] || { text: status || 'Unknown', color: '#757575' };
         return `<span class="status-badge" style="background:${style.color}; color:white; padding:2px 6px; border-radius:3px; font-size:0.85em; margin-left:8px;">${style.text}</span>`;
     }
+
     function getWeekdayName(timestamp) {
         if (!timestamp) return "No Date";
         return new Date(timestamp * 1000).toLocaleDateString('en-US', { weekday: 'long' });
     }
+
     function normalizeTitle(t) {
         if (!t) return '';
         return t.toLowerCase()
@@ -199,6 +231,7 @@
             .replace(/\b(season|part|cour|arc)\s*(\d+)/gi, '$2')
             .trim();
     }
+
     function calculateScore(media, searchTerm, preferredYear, preferredFormat) {
         let score = 0;
         const nSearch = normalizeTitle(searchTerm);
@@ -213,6 +246,7 @@
         if (preferredYear && media.startDate?.year === preferredYear) score += 95;
         return score;
     }
+
     // ==================== API HELPERS ====================
     function makeGraphQLRequest(query, variables) {
         return new Promise((resolve) => {
@@ -232,6 +266,7 @@
             });
         });
     }
+
     // ==================== DETAIL PAGE ====================
     async function fetchAniListData(title, shortTitle, mediaType, year, format, h2, h3, forceMediaRefresh = false) {
         const clean = (t) => t ? t.trim()
@@ -239,6 +274,7 @@
                 ({II:2,III:3,IV:4,V:5,VI:6,VII:7,VIII:8,IX:9,X:10,XI:11}[m.toUpperCase()] || m))
             .replace(/\b(?:Season|Part|Cour|Arc)\s*(\d+)/gi, ' $1')
             .replace(/\s+/g, ' ').trim() : '';
+
         const searchTerms = [clean(title), clean(shortTitle)].filter(Boolean);
         if (!searchTerms.length) return fallback(h3, shortTitle, mediaType);
 
@@ -246,8 +282,10 @@
         if (cached && !forceMediaRefresh) {
             const needsRefresh = !!cached._needsMediaRefresh;
             delete cached._needsMediaRefresh;
+
             console.log(`%c[AniList] CACHE HIT: ${cached.title.romaji}${needsRefresh ? ' (media refresh needed)' : ''}`,
                 needsRefresh ? 'color:orange;font-weight:bold' : 'color:lime;font-weight:bold');
+
             useResult(cached, h2, h3, mediaType, 999);
 
             if (needsRefresh) {
@@ -276,6 +314,7 @@
         const promises = searchTerms.map(term =>
             makeGraphQLRequest(query, { search: term, type: mediaType })
         );
+
         const resultsArray = await Promise.all(promises);
         resultsArray.forEach((data, index) => {
             const term = searchTerms[index];
@@ -296,6 +335,8 @@
             fallback(h3, shortTitle, mediaType);
         }
     }
+
+    // ==================== UI FUNCTIONS ====================
     function insertAniListBanner(bannerUrl) {
         if (!enableBanners || document.getElementById('ab-anilist-banner') || !bannerUrl) return;
         GM_xmlhttpRequest({
@@ -316,8 +357,9 @@
             }
         });
     }
+
     function embedTrailer(src, atTop = false) {
-        if (document.querySelector('.trailer-box')) return; // Prevent duplicates
+        if (document.querySelector('.trailer-box')) return;
         const ts = document.createElement('div');
         ts.className = 'box trailer-box';
         ts.innerHTML = `
@@ -339,10 +381,10 @@
             synopsisBox ? synopsisBox.after(ts) : main.appendChild(ts);
         }
     }
+
     function useResult(media, h2, h3, mediaType, score) {
         console.log(`%c[AniList] SELECTED: ${media.title.romaji} Score: ${score}`, 'color:lime;font-weight:bold');
 
-        // Banner + Trailer are always attempted on every useResult call (fixes refetch visibility)
         if (media.bannerImage) insertAniListBanner(media.bannerImage);
 
         const na = media.nextAiringEpisode;
@@ -353,10 +395,12 @@
             const sec = na.airingAt - Math.floor(Date.now() / 1000);
             airingText = formatTimeUntil(sec, true, mediaType);
         }
+
         if (airingText) {
             const span = document.createElement('span');
             span.style.cssText = 'font-weight:900;font-size:15px;margin-left:8px;';
             span.innerHTML = ' | ' + airingText;
+
             const list = getStoredList();
             const alreadyAdded = list.some(item => item.id === media.id);
             const btn = document.createElement('button');
@@ -386,6 +430,7 @@
             span.appendChild(btn);
             h2.appendChild(span);
         }
+
         if (media.id) appendAniListLink(media.id, h3, mediaType);
 
         const tr = media.trailer;
@@ -395,6 +440,7 @@
             embedTrailer(`https://www.youtube-nocookie.com/embed/${tr.id}?${params}`, trailerAtTop);
         }
     }
+
     function appendAniListLink(id, h3, mediaType) {
         const last = [...h3.querySelectorAll('a')].pop();
         const sep = document.createElement('span');
@@ -412,6 +458,7 @@
             h3.append(sep, a);
         }
     }
+
     function fallback(h3, shortTitle, mediaType) {
         const clean = encodeURIComponent(shortTitle.toLowerCase());
         const url = `https://anilist.co/search/${mediaType.toLowerCase()}?search=${clean}`;
@@ -431,6 +478,7 @@
             h3.append(sep, a);
         }
     }
+
     function handleDetailPage() {
         const start = (h2, h3) => {
             let seriesTitle = '', typeText = '', releaseYear = null;
@@ -443,14 +491,17 @@
                 seriesTitle = h2.querySelector('a')?.textContent.trim() || h2.textContent.trim();
                 releaseYear = h2.textContent.match(/\[(\d{4})\]/)?.[1] ? parseInt(RegExp.$1) : null;
             }
+
             let mediaType = 'ANIME', format = null;
             const printed = ["Manga","Oneshot","Manhwa","Manhua","Light Novel","Anthology"];
             const animeFmt = {TV:'TV',OVA:'OVA',Movie:'MOVIE',Special:'SPECIAL',ONA:'ONA'};
             if (printed.includes(typeText)) mediaType = 'MANGA';
             else if (typeText in animeFmt) format = animeFmt[typeText];
+
             const shortTitle = seriesTitle.split(':')[0].trim();
             fetchAniListData(seriesTitle, shortTitle, mediaType, releaseYear, format, h2, h3);
         };
+
         const h2 = document.querySelector('#content div.thin h2');
         const h3 = document.querySelector('#content div.thin h3');
         if (h2 && h3) {
@@ -467,12 +518,15 @@
             }, 80);
         }
     }
-    // ==================== HOMEPAGE WIDGET (unchanged) ====================
+
+    // ==================== HOMEPAGE WIDGET ====================
     function handleHomePage() {
         if (!location.pathname.match(/^\/$/)) return;
         if (document.getElementById('ab-next-ep-widget')) return;
+
         const fpright = document.querySelector('.fpright');
         if (!fpright) return;
+
         const container = document.createElement('div');
         container.id = 'ab-next-ep-widget';
         container.style.marginBottom = '20px';
@@ -482,16 +536,20 @@
         fpright.insertBefore(container, fpright.firstChild);
         renderNextEpList();
     }
+
     async function renderNextEpList() {
         const listEl = document.getElementById('next-ep-list');
         if (!listEl) return;
+
         const watchlist = getStoredList();
         if (!watchlist.length) {
             listEl.textContent = 'No shows tracked yet. Add with → [+] on series pages';
             return;
         }
+
         listEl.textContent = 'Updating watchlist...';
         const items = [];
+
         await Promise.all(watchlist.map(async entry => {
             try {
                 let data = getWatchlistCache(entry.id);
@@ -500,6 +558,7 @@
                     if (data) setWatchlistCache(entry.id, data);
                 }
                 if (!data) return;
+
                 const na = data.nextAiringEpisode;
                 items.push({
                     ...entry,
@@ -511,10 +570,13 @@
                 });
             } catch (e) {}
         }));
+
         items.sort((a, b) => (a.timeUntil ?? Infinity) - (b.timeUntil ?? Infinity));
+
         const ul = document.createElement('ul');
         ul.style.cssText = 'list-style:none;padding:0;margin:0;';
         let currentDay = null;
+
         for (const it of items) {
             const dayName = it.airingAt ? getWeekdayName(it.airingAt) : "No Date";
             if (dayName !== currentDay) {
@@ -525,11 +587,13 @@
                 ul.appendChild(header);
                 currentDay = dayName;
             }
+
             const li = document.createElement('li');
             li.className = 'next-ep-item';
             const countdown = it.timeUntil !== null
                 ? formatTimeUntil(it.timeUntil, false, it.type)
                 : '<span class="countdown-prefix">No upcoming episode</span>';
+
             li.innerHTML = `
                 <button class="next-ep-remove" title="Remove from list">×</button>
                 <div class="next-ep-header">
@@ -538,21 +602,25 @@
                     ${it.episode ? `<span class="ep-badge">Ep ${it.episode}</span>` : ''}
                 </div>
                 <div class="next-ep-countdown">${countdown}</div>`;
+
             li.querySelector('.next-ep-remove').onclick = () => {
                 saveList(getStoredList().filter(e => e.id !== it.id));
                 renderNextEpList();
             };
             ul.appendChild(li);
         }
+
         listEl.innerHTML = '';
         listEl.appendChild(ul);
     }
+
     function fetchAniListEntry(id, mediaType) {
         return makeGraphQLRequest(
             `query($id:Int,$type:MediaType){Media(id:$id,type:$type){id title{romaji english}status nextAiringEpisode{airingAt timeUntilAiring episode}}}`,
             { id, type: mediaType }
         ).then(data => data?.Media || null);
     }
+
     // ==================== INIT ====================
     if (location.pathname.includes('/torrents.php')) {
         handleDetailPage();
