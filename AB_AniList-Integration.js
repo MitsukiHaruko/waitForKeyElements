@@ -2,7 +2,7 @@
 // @name AB - AniList Integration
 // @author Mitsuki Haruko
 // @namespace AnimeBytes Nightly
-// @version 2.0
+// @version 2.1
 // @description Adds direct AniList link, next episode/chapter countdown, optional YouTube trailer embed, personal next-episodes homepage widget, AniList banner
 // @grant GM_xmlhttpRequest
 // @grant GM_getValue
@@ -103,7 +103,7 @@
 
     // ==================== CACHING ====================
     const CORE_CACHE_TTL = 1000 * 60 * 60 * 24 * 120; // 120 days
-    const MEDIA_CACHE_TTL = 1000 * 60 * 60 * 24 * 60;  // 60 days
+    const MEDIA_CACHE_TTL = 1000 * 60 * 60 * 24 * 60; // 60 days
 
     function getCacheKey(title, mediaType) {
         return `ab_anilist_${mediaType}_${title.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
@@ -114,35 +114,26 @@
             const key = getCacheKey(title, mediaType);
             const cached = GM_getValue(key);
             if (!cached) return null;
-
             const data = JSON.parse(cached);
             const age = Date.now() - data.timestamp;
-
             if (!data.media?.id || age >= CORE_CACHE_TTL) {
                 return null;
             }
-
             const media = data.media;
             const na = media.nextAiringEpisode;
             const now = Math.floor(Date.now() / 1000);
-
-            // Smart invalidation: if next episode should have aired >24h ago, force refresh
             if (na?.airingAt && na.airingAt < now - 86400) {
                 console.log(`%c[AniList] CACHE INVALIDATED: ${media.title.romaji} (old airing time)`, 'color:orange;font-weight:bold');
                 return null;
             }
-
-            //rich media refresh logic
             const hasBanner = !!media.bannerImage;
             const hasTrailer = !!media.trailer?.id;
-
             if (!hasBanner || !hasTrailer || age > MEDIA_CACHE_TTL) {
                 const core = { ...media };
                 delete core.bannerImage;
                 if (core.trailer) delete core.trailer;
                 return { ...core, _needsMediaRefresh: true };
             }
-
             return media;
         } catch (e) {
             return null;
@@ -222,31 +213,6 @@
         return new Date(timestamp * 1000).toLocaleDateString('en-US', { weekday: 'long' });
     }
 
-    function normalizeTitle(t) {
-        if (!t) return '';
-        return t.toLowerCase()
-            .replace(/[^a-z0-9\s:]/g, '')
-            .replace(/\b(ii|iii|iv|v|vi|vii|viii|ix|x|xi)\b/g, m =>
-                ({ii:2,iii:3,iv:4,v:5,vi:6,vii:7,viii:8,ix:9,x:10,xi:11}[m] || m))
-            .replace(/\b(season|part|cour|arc)\s*(\d+)/gi, '$2')
-            .trim();
-    }
-
-    function calculateScore(media, searchTerm, preferredYear, preferredFormat) {
-        let score = 0;
-        const nSearch = normalizeTitle(searchTerm);
-        if (media.title.romaji && normalizeTitle(media.title.romaji) === nSearch) score += 100;
-        else if (media.title.romaji && normalizeTitle(media.title.romaji).includes(nSearch)) score += 55;
-        if (media.title.english && normalizeTitle(media.title.english) === nSearch) score += 90;
-        else if (media.title.english && normalizeTitle(media.title.english).includes(nSearch)) score += 50;
-        if (preferredFormat) {
-            if (media.format === preferredFormat) score += 250;
-            else if (media.format) score -= 140;
-        }
-        if (preferredYear && media.startDate?.year === preferredYear) score += 95;
-        return score;
-    }
-
     // ==================== API HELPERS ====================
     function makeGraphQLRequest(query, variables) {
         return new Promise((resolve) => {
@@ -274,7 +240,6 @@
                 ({II:2,III:3,IV:4,V:5,VI:6,VII:7,VIII:8,IX:9,X:10,XI:11}[m.toUpperCase()] || m))
             .replace(/\b(?:Season|Part|Cour|Arc)\s*(\d+)/gi, ' $1')
             .replace(/\s+/g, ' ').trim() : '';
-
         const searchTerms = [clean(title), clean(shortTitle)].filter(Boolean);
         if (!searchTerms.length) return fallback(h3, shortTitle, mediaType);
 
@@ -282,12 +247,9 @@
         if (cached && !forceMediaRefresh) {
             const needsRefresh = !!cached._needsMediaRefresh;
             delete cached._needsMediaRefresh;
-
             console.log(`%c[AniList] CACHE HIT: ${cached.title.romaji}${needsRefresh ? ' (media refresh needed)' : ''}`,
                 needsRefresh ? 'color:orange;font-weight:bold' : 'color:lime;font-weight:bold');
-
             useResult(cached, h2, h3, mediaType, 999);
-
             if (needsRefresh) {
                 console.log('%c[AniList] Starting background rich media refresh', 'color:#ff9800');
                 fetchAniListData(title, shortTitle, mediaType, year, format, h2, h3, true).catch(() => {});
@@ -314,8 +276,8 @@
         const promises = searchTerms.map(term =>
             makeGraphQLRequest(query, { search: term, type: mediaType })
         );
-
         const resultsArray = await Promise.all(promises);
+
         resultsArray.forEach((data, index) => {
             const term = searchTerms[index];
             const results = data?.Page?.media || [];
@@ -334,6 +296,31 @@
         } else {
             fallback(h3, shortTitle, mediaType);
         }
+    }
+
+    function calculateScore(media, searchTerm, preferredYear, preferredFormat) {
+        let score = 0;
+        const nSearch = normalizeTitle(searchTerm);
+        if (media.title.romaji && normalizeTitle(media.title.romaji) === nSearch) score += 100;
+        else if (media.title.romaji && normalizeTitle(media.title.romaji).includes(nSearch)) score += 55;
+        if (media.title.english && normalizeTitle(media.title.english) === nSearch) score += 90;
+        else if (media.title.english && normalizeTitle(media.title.english).includes(nSearch)) score += 50;
+        if (preferredFormat) {
+            if (media.format === preferredFormat) score += 250;
+            else if (media.format) score -= 140;
+        }
+        if (preferredYear && media.startDate?.year === preferredYear) score += 95;
+        return score;
+    }
+
+    function normalizeTitle(t) {
+        if (!t) return '';
+        return t.toLowerCase()
+            .replace(/[^a-z0-9\s:]/g, '')
+            .replace(/\b(ii|iii|iv|v|vi|vii|viii|ix|x|xi)\b/g, m =>
+                ({ii:2,iii:3,iv:4,v:5,vi:6,vii:7,viii:8,ix:9,x:10,xi:11}[m] || m))
+            .replace(/\b(season|part|cour|arc)\s*(\d+)/gi, '$2')
+            .trim();
     }
 
     // ==================== UI FUNCTIONS ====================
@@ -384,7 +371,6 @@
 
     function useResult(media, h2, h3, mediaType, score) {
         console.log(`%c[AniList] SELECTED: ${media.title.romaji} Score: ${score}`, 'color:lime;font-weight:bold');
-
         if (media.bannerImage) insertAniListBanner(media.bannerImage);
 
         const na = media.nextAiringEpisode;
@@ -400,7 +386,6 @@
             const span = document.createElement('span');
             span.style.cssText = 'font-weight:900;font-size:15px;margin-left:8px;';
             span.innerHTML = ' | ' + airingText;
-
             const list = getStoredList();
             const alreadyAdded = list.some(item => item.id === media.id);
             const btn = document.createElement('button');
@@ -491,7 +476,6 @@
                 seriesTitle = h2.querySelector('a')?.textContent.trim() || h2.textContent.trim();
                 releaseYear = h2.textContent.match(/\[(\d{4})\]/)?.[1] ? parseInt(RegExp.$1) : null;
             }
-
             let mediaType = 'ANIME', format = null;
             const printed = ["Manga","Oneshot","Manhwa","Manhua","Light Novel","Anthology"];
             const animeFmt = {TV:'TV',OVA:'OVA',Movie:'MOVIE',Special:'SPECIAL',ONA:'ONA'};
@@ -534,6 +518,7 @@
             <div class="head"><strong>Watch List</strong></div>
             <div class="body" id="next-ep-list" style="padding:12px; font-size:0.94em;">Loading...</div>`;
         fpright.insertBefore(container, fpright.firstChild);
+
         renderNextEpList();
     }
 
@@ -548,8 +533,8 @@
         }
 
         listEl.textContent = 'Updating watchlist...';
-        const items = [];
 
+        const items = [];
         await Promise.all(watchlist.map(async entry => {
             try {
                 let data = getWatchlistCache(entry.id);
@@ -562,21 +547,20 @@
                 const na = data.nextAiringEpisode;
                 items.push({
                     ...entry,
-                    timeUntil: na?.timeUntilAiring ?? null,
+                    airingAt: na?.airingAt ?? null,
                     episode: na?.episode ?? null,
                     title: data.title.romaji || data.title.english || entry.title,
-                    status: data.status || 'UNKNOWN',
-                    airingAt: na?.airingAt ?? null
+                    status: data.status || 'UNKNOWN'
                 });
             } catch (e) {}
         }));
 
-        items.sort((a, b) => (a.timeUntil ?? Infinity) - (b.timeUntil ?? Infinity));
+        items.sort((a, b) => (a.airingAt ?? Infinity) - (b.airingAt ?? Infinity));
 
         const ul = document.createElement('ul');
         ul.style.cssText = 'list-style:none;padding:0;margin:0;';
-        let currentDay = null;
 
+        let currentDay = null;
         for (const it of items) {
             const dayName = it.airingAt ? getWeekdayName(it.airingAt) : "No Date";
             if (dayName !== currentDay) {
@@ -590,9 +574,19 @@
 
             const li = document.createElement('li');
             li.className = 'next-ep-item';
-            const countdown = it.timeUntil !== null
-                ? formatTimeUntil(it.timeUntil, false, it.type)
-                : '<span class="countdown-prefix">No upcoming episode</span>';
+
+            const countdown = (() => {
+                if (it.airingAt == null) {
+                    return '<span class="countdown-prefix">No upcoming episode</span>';
+                }
+                const now = Math.floor(Date.now() / 1000);
+                const secondsLeft = it.airingAt - now;
+
+                if (secondsLeft < -3600) return '<span class="countdown-prefix">Recently aired</span>';
+                if (secondsLeft < 0) return '<span class="countdown-prefix">Just aired</span>';
+
+                return formatTimeUntil(secondsLeft, false, it.type);
+            })();
 
             li.innerHTML = `
                 <button class="next-ep-remove" title="Remove from list">×</button>
@@ -607,6 +601,7 @@
                 saveList(getStoredList().filter(e => e.id !== it.id));
                 renderNextEpList();
             };
+
             ul.appendChild(li);
         }
 
