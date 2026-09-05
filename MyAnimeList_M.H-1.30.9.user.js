@@ -1,7 +1,8 @@
 // ==UserScript==
 // @name        MyAnimeList_M.H
 // @namespace   Nightly
-// @version     1.31.0
+// @version     1.31.1
+// @grant		none
 // @description https://github.com/KanashiiDev
 // @match       https://myanimelist.net/*
 // @match       https://www.mal-badges.com/users/*malbadges*
