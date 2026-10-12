@@ -12,11 +12,11 @@ jobs:
       - name: Progressive rebuild dump
         run: |
           set -e
-          MAX=30
+          BASE="https://ab-nightly.sylphrena1507.workers.dev"
+          MAX=50
           for i in $(seq 1 "$MAX"); do
             echo "=== rebuild attempt $i/$MAX ==="
-            BODY=$(curl -sS -w "\n%{http_code}" \
-              "https://anilist-cache.sylphrena1507.workers.dev/admin/rebuild-dump")
+            BODY=$(curl -sS -w "\n%{http_code}" "$BASE/admin/rebuild-dump")
             HTTP=$(echo "$BODY" | tail -n1)
             TEXT=$(echo "$BODY" | sed '$d')
             echo "HTTP $HTTP"
@@ -35,8 +35,8 @@ jobs:
       - name: Push dump to GitHub
         run: |
           set -e
-          BODY=$(curl -sS -w "\n%{http_code}" \
-            "https://anilist-cache.sylphrena1507.workers.dev/admin/push-now")
+          BASE="https://ab-nightly.sylphrena1507.workers.dev"
+          BODY=$(curl -sS -w "\n%{http_code}" "$BASE/admin/push-now")
           HTTP=$(echo "$BODY" | tail -n1)
           TEXT=$(echo "$BODY" | sed '$d')
           echo "HTTP $HTTP"
