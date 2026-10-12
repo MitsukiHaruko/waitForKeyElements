@@ -9,29 +9,6 @@ jobs:
   push:
     runs-on: ubuntu-latest
     steps:
-      - name: Progressive rebuild dump
-        run: |
-          set -e
-          BASE="https://ab-nightly.sylphrena1507.workers.dev"
-          MAX=50
-          for i in $(seq 1 "$MAX"); do
-            echo "=== rebuild attempt $i/$MAX ==="
-            BODY=$(curl -sS -w "\n%{http_code}" "$BASE/admin/rebuild-dump")
-            HTTP=$(echo "$BODY" | tail -n1)
-            TEXT=$(echo "$BODY" | sed '$d')
-            echo "HTTP $HTTP"
-            echo "$TEXT"
-
-            if [ "$HTTP" != "200" ]; then
-              echo "Rebuild non-200; stopping rebuild loop."
-              break
-            fi
-            if echo "$TEXT" | grep -q 'complete=true'; then
-              echo "Rebuild complete."
-              break
-            fi
-          done
-
       - name: Push dump to GitHub
         run: |
           set -e
