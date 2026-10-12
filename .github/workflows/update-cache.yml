@@ -2,12 +2,50 @@ name: Update AniList cache dump
 
 on:
   schedule:
-    - cron: '0 4 * * 1'   # every Monday 04:00 UTC
-  workflow_dispatch:        # manual run button in GitHub UI
+    - cron: '0 4 * * *'   # every day 04:00 UTC
+  workflow_dispatch:         # manual run button in GitHub UI
 
 jobs:
   push:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Cloudflare Worker
-        run: curl -fsS "https://anilist-cache.sylphrena1507.workers.dev/admin/push-now"
+      - name: Progressive rebuild dump (until complete or max attempts)
+        run: |
+          set -e
+          MAX=25
+          for i in $(seq 1 "$MAX"); do
+            echo "=== rebuild attempt $i/$MAX ==="
+            BODY=$(curl -sS -w "\n%{http_code}" \
+              "https://anilist-cache.sylphrena1507.workers.dev/admin/rebuild-dump")
+            HTTP=$(echo "$BODY" | tail -n1)
+            TEXT=$(echo "$BODY" | sed '$d')
+            echo "HTTP $HTTP"
+            echo "$TEXT"
+
+            if [ "$HTTP" != "200" ]; then
+              echo "Rebuild returned non-200; will still try push with whatever dump exists."
+              break
+            fi
+
+            if echo "$TEXT" | grep -q 'complete=true'; then
+              echo "Rebuild complete."
+              break
+            fi
+
+            if [ "$i" -eq "$MAX" ]; then
+              echo "Reached max rebuild attempts; pushing partial dump."
+            fi
+          done
+
+      - name: Push dump to GitHub
+        run: |
+          set -e
+          BODY=$(curl -sS -w "\n%{http_code}" \
+            "https://anilist-cache.sylphrena1507.workers.dev/admin/push-now")
+          HTTP=$(echo "$BODY" | tail -n1)
+          TEXT=$(echo "$BODY" | sed '$d')
+          echo "HTTP $HTTP"
+          echo "$TEXT"
+          if [ "$HTTP" != "200" ]; then
+            exit 1
+          fi
