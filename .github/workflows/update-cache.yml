@@ -3,16 +3,16 @@ name: Update AniList cache dump
 on:
   schedule:
     - cron: '0 4 * * *'   # every day 04:00 UTC
-  workflow_dispatch:         # manual run button in GitHub UI
+  workflow_dispatch:
 
 jobs:
   push:
     runs-on: ubuntu-latest
     steps:
-      - name: Progressive rebuild dump (until complete or max attempts)
+      - name: Progressive rebuild dump
         run: |
           set -e
-          MAX=25
+          MAX=30
           for i in $(seq 1 "$MAX"); do
             echo "=== rebuild attempt $i/$MAX ==="
             BODY=$(curl -sS -w "\n%{http_code}" \
@@ -23,17 +23,12 @@ jobs:
             echo "$TEXT"
 
             if [ "$HTTP" != "200" ]; then
-              echo "Rebuild returned non-200; will still try push with whatever dump exists."
+              echo "Rebuild non-200; stopping rebuild loop."
               break
             fi
-
             if echo "$TEXT" | grep -q 'complete=true'; then
               echo "Rebuild complete."
               break
-            fi
-
-            if [ "$i" -eq "$MAX" ]; then
-              echo "Reached max rebuild attempts; pushing partial dump."
             fi
           done
 
