@@ -1,0 +1,43 @@
+name: Force rebuild AniList dump
+
+on:
+  workflow_dispatch:
+
+jobs:
+  rebuild-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Rebuild until complete
+        run: |
+          set -e
+          BASE="https://ab-nightly.sylphrena1507.workers.dev"
+          MAX=60
+          for i in $(seq 1 "$MAX"); do
+            echo "=== rebuild $i/$MAX ==="
+            BODY=$(curl -sS -w "\n%{http_code}" "$BASE/admin/rebuild-dump")
+            HTTP=$(echo "$BODY" | tail -n1)
+            TEXT=$(echo "$BODY" | sed '$d')
+            echo "HTTP $HTTP"
+            echo "$TEXT"
+            if [ "$HTTP" != "200" ]; then
+              echo "Rebuild failed"
+              exit 1
+            fi
+            if echo "$TEXT" | grep -q 'complete=true'; then
+              echo "Rebuild complete."
+              break
+            fi
+          done
+
+      - name: Push to GitHub
+        run: |
+          set -e
+          BASE="https://ab-nightly.sylphrena1507.workers.dev"
+          BODY=$(curl -sS -w "\n%{http_code}" "$BASE/admin/push-now")
+          HTTP=$(echo "$BODY" | tail -n1)
+          TEXT=$(echo "$BODY" | sed '$d')
+          echo "HTTP $HTTP"
+          echo "$TEXT"
+          if [ "$HTTP" != "200" ]; then
+            exit 1
+          fi
