@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#7c3aed" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>Bibi Tracker – Erste 10</title>
+  <style>
+    :root {
+      --primary: #7c3aed;
+      --primary-dark: #5b21b6;
+      --bg: #faf5ff;
+      --card: #ffffff;
+      --text: #1e1b4b;
+      --muted: #6b7280;
+      --success: #10b981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.4;
+      padding-bottom: 80px;
+    }
+
+    header {
+      background: linear-gradient(135deg, #7c3aed, #a855f7);
+      color: white;
+      padding: 20px 16px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
+    }
+
+    header h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    header p {
+      font-size: 0.85rem;
+      opacity: 0.9;
+      margin-top: 4px;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 99px;
+      margin-top: 14px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: white;
+      border-radius: 99px;
+      transition: width 0.35s ease;
+    }
+
+    .progress-text {
+      font-size: 0.8rem;
+      margin-top: 6px;
+      opacity: 0.95;
+    }
+
+    .list {
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      display: flex;
+      gap: 0;
+      transition: transform 0.15s;
+    }
+
+    .card:active {
+      transform: scale(0.985);
+    }
+
+    .cover {
+      width: 110px;
+      min-width: 110px;
+      height: 110px;
+      object-fit: cover;
+      background: #e9d5ff;
+    }
+
+    .info {
+      flex: 1;
+      padding: 12px 14px 12px 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .num {
+      background: #ede9fe;
+      color: var(--primary);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 6px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      line-height: 1.25;
+    }
+
+    .desc {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 4px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .check-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+    }
+
+    .checkbox {
+      width: 26px;
+      height: 26px;
+      border: 2.5px solid #d1d5db;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .checkbox.checked {
+      background: var(--success);
+      border-color: var(--success);
+    }
+
+    .checkbox.checked::after {
+      content: "✓";
+      color: white;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .status {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .status.done {
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      border-top: 1px solid #e5e7eb;
+      padding: 12px 16px;
+      display: flex;
+      gap: 10px;
+      z-index: 20;
+    }
+
+    button {
+      flex: 1;
+      border: none;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-reset {
+      background: #f3f4f6;
+      color: #4b5563;
+    }
+
+    .btn-reset:active {
+      background: #e5e7eb;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Bibi Blocksberg Tracker</h1>
+    <p>Erste 10 Folgen</p>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+    </div>
+    <div class="progress-text" id="progressText">0 von 10 gehört</div>
+  </header>
+
+  <div class="list" id="list"></div>
+
+  <footer>
+    <button class="btn-reset" onclick="resetAll()">Alles zurücksetzen</button>
+  </footer>
+
+  <script>
+    const episodes = [
+      {
+        id: 1,
+        title: "Hexen gibt es doch",
+        desc: "Familie Blocksberg zieht nach Neustadt. Die Nachbarn werden misstrauisch, weil Bibi auf dem Besen fliegt.",
+        cover: "https://www.bibiblocksberg.de/sites/default/files/styles/max_2600x2600/public/hoerspiele/ep_image/Bibi_Blocksberg_001.jpg.webp"
+      },
+      {
+        id: 2,
+        title: "Hexerei in der Schule",
+        desc: "Bibi versucht in der Schule zu hexen und richtet dabei ein ziemliches Chaos an.",
+        cover: "https://www.bibiblocksberg.de/sites/default/files/styles/max_2600x2600/public/hoerspiele/ep_image/Bibi_Blocksberg_002.jpg.webp"
+      },
+      {
+        id: 3,
+        title: "Die Zauberlimonade",
+        desc: "Bibi mixt eine Zauberlimonade, die unerwartete und sehr lustige Wirkungen hat.",
+        cover: "https://www.bibiblocksberg.de/sites/default/files/styles/max_2600x2600/public/hoerspiele/ep_image/Bibi_Blocksberg_003.jpg.webp"
+      },
+      {
+        id: 4,
+        title: "Der Bankräuber",
+        desc: "Ein Bankräuber treibt in Neustadt sein Unwesen. Bibi mischt sich ein.",
+        cover: "https://www.bibiblocksberg.de/sites/default/files/styles/max_2600x2600/public/hoerspiele/ep_image/Bibi_Blocksberg_004.jpg.webp"
+      },
+      {
+        id: 5,
+        title: "Ein verhexter Urlaub",
+        desc: "Die Blocksbergs fahren in den Urlaub – und Bibis Hexerei sorgt für Chaos.",
+        cover: "https://www.bibiblocksberg.de/sites/default/files/styles/max_2600x2600/public/hoerspiele/ep_image/Bibi_Blocksberg_005.jpg.webp"
+      },
+      {
+        id: 6,
+        title: "Die Kuh im Schlafzimmer",
+        desc: "Durch einen missglückten Hexspruch landet eine Kuh im Schlafzimmer.",
+        cover: "https://www.bibiblocksberg.de/sites/default/files/styles/max_2600x2600/public/hoerspiele/ep_image/Bibi_Blocksberg_006.jpg.webp"
+      },
+      {
+        id: 7,
+        title: "… heilt den Bürgermeister",
+        desc: "Der Bürgermeister ist krank. Bibi versucht ihm mit Hexerei zu helfen.",
+        cover: "https://www.bibiblocksberg.de/sites/default/files/styles/max_2600x2600/public/hoerspiele/ep_image/Bibi_Blocksberg_007.jpg.webp"
+      },
+      {
+        id: 8,
+        title: "Die Schlossgespenster",
+        desc: "Bibi gerät auf einem Schloss mit Gespenstern aneinander.",
+        cover: "https://www.bibiblocksberg.de/sites/default/files/styles/max_2600x2600/public/hoerspiele/ep_image/Bibi_Blocksberg_008.jpg.webp"
+      },
+      {
+        id: 9,
+        title: "… verliebt sich",
+        desc: "Bibi verliebt sich zum ersten Mal. Natürlich läuft nicht alles glatt.",
+        cover: "https://www.bibiblocksberg.de/sites/default/files/styles/max_2600x2600/public/hoerspiele/ep_image/Bibi_Blocksberg_009.jpg.webp"
+      },
+      {
+        id: 10,
+        title: "Bibis neue Freundin",
+        desc: "Bibi bekommt eine neue Freundin und erlebt mit ihr ein Abenteuer.",
+        cover: "https://www.bibiblocksberg.de/sites/default/files/styles/max_2600x2600/public/hoerspiele/ep_image/Bibi_Blocksberg_010.jpg.webp"
+      }
+    ];
+
+    const STORAGE_KEY = "bibi-tracker-v1";
+
+    function loadState() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+      } catch {
+        return {};
+      }
+    }
+
+    function saveState(state) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function toggle(id) {
+      const state = loadState();
+      state[id] = !state[id];
+      saveState(state);
+      render();
+    }
+
+    function resetAll() {
+      if (confirm("Wirklich alle Haken zurücksetzen?")) {
+        localStorage.removeItem(STORAGE_KEY);
+        render();
+      }
+    }
+
+    function render() {
+      const state = loadState();
+      const list = document.getElementById("list");
+      list.innerHTML = "";
+
+      let done = 0;
+
+      episodes.forEach(ep => {
+        const checked = !!state[ep.id];
+        if (checked) done++;
+
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <img class="cover" src="${ep.cover}" alt="Cover ${ep.id}" loading="lazy"
+               onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22110%22 height=%22110%22%3E%3Crect fill=%22%23e9d5ff%22 width=%22110%22 height=%22110%22/%3E%3Ctext x=%2255%22 y=%2260%22 text-anchor=%22middle%22 fill=%22%237c3aed%22 font-size=%2224%22%3E${ep.id}%3C/text%3E%3C/svg%3E'">
+          <div class="info">
+            <div>
+              <div class="title-row">
+                <span class="num">#${ep.id}</span>
+                <div class="title">${ep.title}</div>
+              </div>
+              <div class="desc">${ep.desc}</div>
+            </div>
+            <div class="check-row">
+              <span class="status ${checked ? 'done' : ''}">${checked ? 'Gehört ✓' : 'Noch nicht'}</span>
+              <div class="checkbox ${checked ? 'checked' : ''}" onclick="toggle(${ep.id})"></div>
+            </div>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+
+      const pct = (done / 10) * 100;
+      document.getElementById("progressFill").style.width = pct + "%";
+      document.getElementById("progressText").textContent = `${done} von 10 gehört`;
+    }
+
+    render();
+  </script>
+</body>
+</html>
